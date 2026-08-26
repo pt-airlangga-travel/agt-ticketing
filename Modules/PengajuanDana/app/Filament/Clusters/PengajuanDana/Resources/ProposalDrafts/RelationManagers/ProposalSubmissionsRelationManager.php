@@ -3,13 +3,21 @@
 namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\RelationManagers;
 
 use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Modules\PengajuanDana\Enums\ProposalSubmissionStatus;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Concerns\HasFormattedNumber;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\ViewProposalDraft;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\ProposalSubmissionResource;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\Schemas\ProposalSubmissionCreateSchema;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\Schemas\ProposalSubmissionViewSchema;
+use Modules\PengajuanDana\Services\ProposalSubmissionService;
 
 class ProposalSubmissionsRelationManager extends RelationManager
 {
@@ -23,6 +31,11 @@ class ProposalSubmissionsRelationManager extends RelationManager
 
     protected static ?string $pluralLabel = 'Proposal Submissions';
 
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return $pageClass === ViewProposalDraft::class;
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -33,12 +46,26 @@ class ProposalSubmissionsRelationManager extends RelationManager
                 Action::make('create-submission')
                     ->label('Buat Proposal Submission')
                     ->icon(Heroicon::OutlinedPaperAirplane)
-                    ->visible(fn (): bool => auth()->user()?->canAccess(
-                        ProposalSubmissionResource::getRbacPermissionNames()['create']
-                    ) ?? false)
-                    ->url(fn (): string => ProposalSubmissionResource::getUrl('create', [
-                        'judan_proposal_draft_id' => $this->getOwnerRecord()->getKey(),
-                    ])),
+                    ->modalHeading('Buat Proposal Submission')
+                    ->form(ProposalSubmissionCreateSchema::getFields())
+                    ->visible(fn (): bool => $this->getPageClass() === ViewProposalDraft::class
+                        && auth()->user()?->canAccess(
+                            ProposalSubmissionResource::getRbacPermissionNames()['create']
+                        ) ?? false)
+                    ->action(function (array $data): void {
+                        try {
+                            app(ProposalSubmissionService::class)->submit($this->getOwnerRecord(), auth()->user(), $data);
+                            Notification::make()->success()->title('Proposal submission berhasil dibuat')->send();
+                        } catch (\Throwable $e) {
+                            Notification::make()->danger()->title('Gagal')->body($e->getMessage())->send();
+                        }
+                    }),
+            ])
+            ->recordActions([
+                ViewAction::make('view-detail')
+                    ->label('Lihat')
+                    ->modalHeading(fn ($record) => 'Detail Submission ' . self::formatDefinedId((string) $record->no_submission))
+                    ->schema(ProposalSubmissionViewSchema::getFields()),
             ])
             ->columns([
                 TextColumn::make('#')

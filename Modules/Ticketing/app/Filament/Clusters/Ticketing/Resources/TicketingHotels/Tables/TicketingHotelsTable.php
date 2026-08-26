@@ -30,7 +30,7 @@ class TicketingHotelsTable
                     ->label('Aktif')
                     ->toggleable()
                     ->onIcon('heroicon-s-check-circle')
-                    ->offIcon('heroicon-s-x-circle')    
+                    ->offIcon('heroicon-s-x-circle')
                     ->onColor('success')
                     ->offColor('danger'),
             ])

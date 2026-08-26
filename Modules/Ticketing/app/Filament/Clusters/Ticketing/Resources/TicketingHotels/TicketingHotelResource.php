@@ -2,10 +2,9 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingHotels;
 
+use App\Filament\Concerns\HasRbacPermission;
 use BackedEnum;
 use Filament\Resources\Resource;
-
-use App\Filament\Concerns\HasRbacPermission;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -25,9 +24,13 @@ class TicketingHotelResource extends Resource
     protected static ?string $model = TicketingHotel::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
+
     protected static ?string $navigationLabel = 'Hotel';
+
     protected static ?string $slug = 'hotel';
+
     protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = TicketingCluster::class;

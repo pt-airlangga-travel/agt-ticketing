@@ -5,7 +5,6 @@ namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingKeret
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\RichEditor\TextColor;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\PaginationMode;
@@ -20,7 +19,7 @@ class TicketingKeretasTable
             ->recordAction(null)
             ->columns([
 
-                //rowIndex
+                // rowIndex
                 TextColumn::make('#')
                     ->rowIndex(),
 

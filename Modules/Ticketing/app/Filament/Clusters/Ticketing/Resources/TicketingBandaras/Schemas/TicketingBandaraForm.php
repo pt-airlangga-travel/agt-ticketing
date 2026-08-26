@@ -19,7 +19,7 @@ class TicketingBandaraForm
                     ->label('Kode')
                     ->required()
                     ->maxLength(10),
-               
+
             ]);
     }
 }

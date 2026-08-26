@@ -4,6 +4,7 @@ namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\Propos
 
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -12,7 +13,10 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
 use Modules\PengajuanDana\Enums\ProposalDraftStatus;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Concerns\HasFormattedNumber;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\ViewProposalDraft;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\ProposalSubmissionResource;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\Schemas\ProposalSubmissionCreateSchema;
+use Modules\PengajuanDana\Services\ProposalSubmissionService;
 
 class ProposalDraftsTable
 {
@@ -108,15 +112,29 @@ class ProposalDraftsTable
                     ->preload(),
             ])
             ->recordActions([
+                Action::make('detail')
+                    ->label('Detail')
+                    ->icon(Heroicon::OutlinedEye)
+                    ->color('gray')
+                    ->url(fn ($record): string => ViewProposalDraft::getUrl(['record' => $record])),
+
                 Action::make('ajukan')
                     ->label('Ajukan')
                     ->icon(Heroicon::OutlinedPaperAirplane)
                     ->color('primary')
+                    ->modalHeading('Buat Proposal Submission')
+                    ->modalDescription(fn ($record): string => 'Ajukan ' . self::formatDefinedId($record->no_pengajuan) . ' (' . $record->event?->nama . ')?')
+                    ->form(ProposalSubmissionCreateSchema::getFields())
                     ->visible(fn ($record): bool => $record->status === ProposalDraftStatus::Menunggu
                         && auth()->user()?->canAccess(ProposalSubmissionResource::getRbacPermissionNames()['create']))
-                    ->url(fn ($record): string => ProposalSubmissionResource::getUrl('create', [
-                        'judan_proposal_draft_id' => $record->getKey(),
-                    ])),
+                    ->action(function ($record, array $data): void {
+                        try {
+                            app(ProposalSubmissionService::class)->submit($record, auth()->user(), $data);
+                            Notification::make()->success()->title('Proposal submission berhasil dibuat')->send();
+                        } catch (\Throwable $e) {
+                            Notification::make()->danger()->title('Gagal')->body($e->getMessage())->send();
+                        }
+                    }),
 
                 Action::make('download')
                     ->label('Unduh')

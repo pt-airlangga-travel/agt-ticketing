@@ -2,15 +2,13 @@
 
 namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 use Modules\PengajuanDana\Enums\ProposalSubmissionStatus;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Concerns\HasClusterSubNavigation;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\ProposalDraftResource;
 
-class EditProposalDraft extends EditRecord
+class ViewProposalDraft extends ViewRecord
 {
     use HasClusterSubNavigation;
 
@@ -19,13 +17,14 @@ class EditProposalDraft extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            EditAction::make()
+                ->label('Edit'),
         ];
     }
 
     public function getTitle(): string
     {
-        return 'Ubah';
+        return 'Detail';
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
@@ -40,23 +39,5 @@ class EditProposalDraft extends EditRecord
         }
 
         return $data;
-    }
-
-    protected function handleRecordUpdate(Model $record, array $data): Model
-    {
-        return DB::transaction(function () use ($record, $data): Model {
-            $record = parent::handleRecordUpdate($record, $data);
-
-            $submission = $record->submissions()
-                ->where('status', ProposalSubmissionStatus::Menunggu->value)
-                ->latest('id')
-                ->first();
-
-            if ($submission) {
-                $submission->needs()->sync($data['needs'] ?? []);
-            }
-
-            return $record;
-        });
     }
 }

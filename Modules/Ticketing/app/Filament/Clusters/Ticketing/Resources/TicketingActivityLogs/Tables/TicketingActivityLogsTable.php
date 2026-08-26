@@ -2,6 +2,7 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingActivityLogs\Tables;
 
+use Carbon\Carbon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
@@ -82,22 +83,22 @@ class TicketingActivityLogsTable
                 $new = self::formatValue($field, $change['new']);
 
                 $html .= '<div class="leading-tight">';
-                $html .= '<span class="font-semibold text-gray-950 dark:text-white">' . e($label) . '</span>';
+                $html .= '<span class="font-semibold text-gray-950 dark:text-white">'.e($label).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400">: </span>';
-                $html .= '<span class="line-through text-gray-400 dark:text-gray-500">' . e($old) . '</span>';
+                $html .= '<span class="line-through text-gray-400 dark:text-gray-500">'.e($old).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400"> → </span>';
-                $html .= '<span class="text-gray-950 dark:text-white">' . e($new) . '</span>';
+                $html .= '<span class="text-gray-950 dark:text-white">'.e($new).'</span>';
                 $html .= '</div>';
             } else {
                 $html .= '<div class="leading-tight">';
-                $html .= '<span class="font-semibold text-gray-950 dark:text-white">' . e($label) . '</span>';
+                $html .= '<span class="font-semibold text-gray-950 dark:text-white">'.e($label).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400">: </span>';
-                $html .= '<span class="text-gray-950 dark:text-white">' . e(self::formatValue($field, $change)) . '</span>';
+                $html .= '<span class="text-gray-950 dark:text-white">'.e(self::formatValue($field, $change)).'</span>';
                 $html .= '</div>';
             }
         }
 
-        return $html . '</div>';
+        return $html.'</div>';
     }
 
     protected static function fieldLabel(string $field): string
@@ -156,7 +157,7 @@ class TicketingActivityLogsTable
         }
 
         if (in_array($field, ['harga_beli', 'harga_publish', 'harga_jual'], true)) {
-            return 'Rp ' . number_format((int) $value, 0, ',', '.');
+            return 'Rp '.number_format((int) $value, 0, ',', '.');
         }
 
         if ($field === 'pulang_pergi') {
@@ -168,7 +169,7 @@ class TicketingActivityLogsTable
         }
 
         if (in_array($field, ['created_at', 'updated_at', 'tanggal_pemesanan'], true)) {
-            return \Carbon\Carbon::parse($value)->format('d M Y');
+            return Carbon::parse($value)->format('d M Y');
         }
 
         if (in_array($field, [
@@ -179,7 +180,7 @@ class TicketingActivityLogsTable
             'jadwal_checkin',
             'jadwal_checkout',
         ], true)) {
-            return \Carbon\Carbon::parse($value)->format('d M Y H:i');
+            return Carbon::parse($value)->format('d M Y H:i');
         }
 
         if (is_bool($value)) {

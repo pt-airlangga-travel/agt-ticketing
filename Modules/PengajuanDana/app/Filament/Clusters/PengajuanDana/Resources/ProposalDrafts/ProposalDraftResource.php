@@ -13,6 +13,7 @@ use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\PengajuanDanaCluster;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\CreateProposalDraft;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\EditProposalDraft;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\ListProposalDrafts;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Pages\ViewProposalDraft;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\RelationManagers\ProposalSubmissionsRelationManager;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Schemas\ProposalDraftForm;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Tables\ProposalDraftsTable;
@@ -79,6 +80,7 @@ class ProposalDraftResource extends Resource
             'index' => ListProposalDrafts::route('/'),
             'create' => CreateProposalDraft::route('/create'),
             'edit' => EditProposalDraft::route('/{record}/edit'),
+            'view' => ViewProposalDraft::route('/{record}'),
         ];
     }
 }

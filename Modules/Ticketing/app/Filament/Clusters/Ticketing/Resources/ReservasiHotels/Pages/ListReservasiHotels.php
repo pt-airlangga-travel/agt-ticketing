@@ -5,12 +5,14 @@ namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotel
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\HasClusterSubNavigation;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\ListsReservasiByEntity;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\ReservasiHotelResource;
 use Modules\Ticketing\Models\TicketingKamarHotel;
 
 class ListReservasiHotels extends ListRecords
 {
+    use HasClusterSubNavigation;
     use ListsReservasiByEntity;
 
     protected static string $resource = ReservasiHotelResource::class;

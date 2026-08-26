@@ -15,7 +15,7 @@ class TicketingMaskapaiForm
                     ->label('Nama Maskapai')
                     ->required()
                     ->columnSpanFull()
-                    ->maxLength(255),     
+                    ->maxLength(255),
             ]);
     }
 }

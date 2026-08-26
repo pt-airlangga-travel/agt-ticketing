@@ -2,10 +2,9 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingBandaras;
 
+use App\Filament\Concerns\HasRbacPermission;
 use BackedEnum;
 use Filament\Resources\Resource;
-
-use App\Filament\Concerns\HasRbacPermission;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -25,9 +24,13 @@ class TicketingBandaraResource extends Resource
     protected static ?string $model = TicketingBandara::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+
     protected static ?string $navigationLabel = 'Bandar Udara';
+
     protected static ?string $slug = 'bandar-udara';
+
     protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = TicketingCluster::class;

@@ -4,12 +4,14 @@ namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokum
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\HasClusterSubNavigation;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\ListsReservasiByEntity;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\ReservasiDokumenResource;
 use Modules\Ticketing\Models\TicketingDokumen;
 
 class ListReservasiDokumens extends ListRecords
 {
+    use HasClusterSubNavigation;
     use ListsReservasiByEntity;
 
     protected static string $resource = ReservasiDokumenResource::class;

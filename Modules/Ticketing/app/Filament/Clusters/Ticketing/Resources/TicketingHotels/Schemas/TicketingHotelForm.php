@@ -17,19 +17,19 @@ class TicketingHotelForm
                     ->maxLength(255),
                 TextInput::make('alamat')
                     ->label('Alamat')
-                    ->required(),     
+                    ->required(),
                 TextInput::make('bintang')
                     ->label('Bintang')
-                    ->required(),  
+                    ->required(),
                 TextInput::make('kota')
                     ->label('Kota')
-                    ->required(),  
+                    ->required(),
                 TextInput::make('Telepon')
                     ->label('Telepon')
-                    ->required(),     
+                    ->required(),
                 TextInput::make('email')
                     ->label('Email')
-                    ->required(),      
+                    ->required(),
             ]);
     }
 }

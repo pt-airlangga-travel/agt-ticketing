@@ -2,11 +2,9 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingActivityLogs;
 
+use App\Filament\Concerns\HasRbacPermission;
 use BackedEnum;
 use Filament\Resources\Resource;
-
-use App\Filament\Concerns\HasRbacPermission;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingActivityLogs\Pages\ListTicketingActivityLogs;
@@ -22,9 +20,13 @@ class TicketingActivityLogResource extends Resource
     protected static ?string $model = TicketingActivityLog::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
+
     protected static ?string $navigationLabel = 'Log Aktivitas';
+
     protected static ?string $slug = 'log-aktivitas';
+
     protected static ?int $navigationSort = 9;
 
     protected static ?string $cluster = TicketingCluster::class;

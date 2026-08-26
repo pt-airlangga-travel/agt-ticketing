@@ -8,5 +8,4 @@ use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingStasiuns\Ti
 class CreateTicketingStasiun extends CreateRecord
 {
     protected static string $resource = TicketingStasiunResource::class;
-    
 }

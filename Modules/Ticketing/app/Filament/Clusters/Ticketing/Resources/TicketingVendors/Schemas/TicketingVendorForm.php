@@ -16,7 +16,7 @@ class TicketingVendorForm
                     ->label('Nama Vendor')
                     ->required()
                     ->maxLength(255),
-                    
+
                 Select::make('jenis_vendor')
                     ->label('Jenis Vendor')
                     ->options([

@@ -32,8 +32,8 @@ class ProposalDraftCreateForm
                     ->schema([
                         Placeholder::make('event_display')
                             ->label('Event')
-                            ->content(fn ($get) => Event::find($get('event_id'))?->nama)
-                            ->columnSpanFull(),
+                            ->content(fn ($get) => Event::find($get('event_id'))?->nama),
+                            // ->columnSpanFull(),
 
                         TextInput::make('event_id')
                             ->hidden()

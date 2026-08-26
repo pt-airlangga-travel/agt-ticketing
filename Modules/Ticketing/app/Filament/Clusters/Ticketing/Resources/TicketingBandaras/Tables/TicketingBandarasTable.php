@@ -2,7 +2,6 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingBandaras\Tables;
 
-use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,7 +20,7 @@ class TicketingBandarasTable
             ->columns([
                 TextColumn::make('#')
                     ->rowIndex(),
-                    
+
                 TextColumn::make('nama_bandara')
                     ->label('Nama Bandar Udara')
                     ->searchable(),

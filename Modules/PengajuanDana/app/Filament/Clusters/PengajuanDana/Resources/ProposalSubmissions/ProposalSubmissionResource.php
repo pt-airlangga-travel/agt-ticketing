@@ -35,6 +35,11 @@ class ProposalSubmissionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'no_submission';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()

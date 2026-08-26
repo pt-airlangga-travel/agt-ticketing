@@ -5,7 +5,6 @@ namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingUnitK
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\RichEditor\TextColor;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\PaginationMode;
@@ -21,7 +20,7 @@ class TicketingUnitKerjasTable
             ->columns([
                 TextColumn::make('#')
                     ->rowIndex(),
-                    
+
                 TextColumn::make('nama_unit_kerja')
                     ->label('Unit Kerja')
                     ->searchable(),

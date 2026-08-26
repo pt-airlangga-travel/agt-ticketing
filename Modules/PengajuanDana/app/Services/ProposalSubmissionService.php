@@ -73,6 +73,36 @@ class ProposalSubmissionService
         }
     }
 
+    public function submit(ProposalDraft $draft, User $user, array $data): ProposalSubmission
+    {
+        $this->assertCanSubmit($draft);
+
+        $sequence = $draft->submissions()->count() + 1;
+
+        return DB::transaction(function () use ($draft, $user, $data, $sequence): ProposalSubmission {
+            $submission = $draft->submissions()->create([
+                'no_submission' => $this->generateNoSubmission($draft),
+                'event_identity' => $this->generateEventIdentity($draft->event, $draft, $sequence),
+                'organizer_admin_id' => $user->getKey(),
+                'status' => ProposalSubmissionStatus::Menunggu,
+                'booking_code' => $data['booking_code'] ?? null,
+            ]);
+
+            $submission->needs()->attach($data['needs'] ?? []);
+
+            foreach ($data['bankAccounts'] ?? [] as $account) {
+                $submission->bankAccounts()->create($account);
+            }
+
+            $draft->update([
+                'status' => ProposalDraftStatus::Diajukan,
+                'organizer_admin_id' => $user->getKey(),
+            ]);
+
+            return $submission;
+        });
+    }
+
     public function approve(ProposalSubmission $submission, User $manager): void
     {
         if ($submission->status !== ProposalSubmissionStatus::Menunggu) {

@@ -5,12 +5,14 @@ namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeret
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\HasClusterSubNavigation;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\ListsReservasiByEntity;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\ReservasiKeretaResource;
 use Modules\Ticketing\Models\TicketingTiketKereta;
 
 class ListReservasiKeretas extends ListRecords
 {
+    use HasClusterSubNavigation;
     use ListsReservasiByEntity;
 
     protected static string $resource = ReservasiKeretaResource::class;
