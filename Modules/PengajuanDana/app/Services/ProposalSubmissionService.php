@@ -31,8 +31,8 @@ class ProposalSubmissionService
             ->count() + 1;
 
         return $eventCode
-            . $draftIndex
-            . str_pad((string) $sequence, 2, '0', STR_PAD_LEFT);
+            .$draftIndex
+            .str_pad((string) $sequence, 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -173,8 +173,8 @@ class ProposalSubmissionService
             ->count();
 
         return $eventCode
-            . $draftIndex
-            . str_pad((string) $accountIndex, 2, '0', STR_PAD_LEFT);
+            .$draftIndex
+            .str_pad((string) $accountIndex, 2, '0', STR_PAD_LEFT);
     }
 
     public function recordTransfer(ProposalSubmission $submission, User $treasurer, array $data): void

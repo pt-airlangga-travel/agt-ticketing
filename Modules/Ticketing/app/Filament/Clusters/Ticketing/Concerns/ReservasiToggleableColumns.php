@@ -6,7 +6,7 @@ use Filament\Tables\Columns\TextColumn;
 
 trait ReservasiToggleableColumns
 {
-protected static function reservasiCommonToggleableColumns(array $exclude = [], bool $individualSearch = false): array
+    protected static function reservasiCommonToggleableColumns(array $exclude = [], bool $individualSearch = false): array
     {
         $searchable = $individualSearch
             ? fn (TextColumn $column): TextColumn => $column->searchable(isIndividual: true, isGlobal: false)
@@ -26,13 +26,13 @@ protected static function reservasiCommonToggleableColumns(array $exclude = [], 
 
             TextColumn::make('ticketingPemesanan.harga_beli')
                 ->label('Harga Beli')
-                ->formatStateUsing(fn ($state) => 'Rp ' . number_format((int) $state, 0, ',', '.'))
+                ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
 
             TextColumn::make('ticketingPemesanan.harga_publish')
                 ->label('Harga Publish')
-                ->formatStateUsing(fn ($state) => 'Rp ' . number_format((int) $state, 0, ',', '.'))
+                ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
 

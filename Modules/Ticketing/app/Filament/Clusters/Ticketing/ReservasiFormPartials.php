@@ -32,16 +32,16 @@ class ReservasiFormPartials
     public static function zonaWaktuOptions(): array
     {
         $options = [
-            'WIB'  => 'WIB (GMT+7)',
+            'WIB' => 'WIB (GMT+7)',
             'WITA' => 'WITA (GMT+8)',
-            'WIT'  => 'WIT (GMT+9)',
+            'WIT' => 'WIT (GMT+9)',
         ];
 
         for ($i = 0; $i <= 14; $i++) {
             if (in_array($i, [7, 8, 9], true)) {
                 continue;
             }
-            $options['GMT+' . $i] = 'GMT+' . $i;
+            $options['GMT+'.$i] = 'GMT+'.$i;
         }
 
         return $options;
@@ -175,7 +175,7 @@ class ReservasiFormPartials
                             $profit = $jual - $hpp - $komisi;
 
                             if ($profit < 0) {
-                                $fail('Harga jual harus cukup menutup HPP (' . number_format($hpp, 0, ',', '.') . ') + Komisi (' . number_format($komisi, 0, ',', '.') . '). Profit minus, invoice tidak dapat terbit.');
+                                $fail('Harga jual harus cukup menutup HPP ('.number_format($hpp, 0, ',', '.').') + Komisi ('.number_format($komisi, 0, ',', '.').'). Profit minus, invoice tidak dapat terbit.');
                             }
                         },
                     ]),
@@ -189,7 +189,6 @@ class ReservasiFormPartials
             //         ->label('Komisi Publish')
             //         ->content(fn (Get $get) => 'Rp ' . number_format((int) self::parseRupiah($get('harga_publish')), 0, ',', '.')),
 
-                
             // ]),
 
             Text::make('profit_rincian')
@@ -211,7 +210,7 @@ class ReservasiFormPartials
         $jual = self::parseRupiah($get('harga_jual'));
         $profit = $jual - $hpp - $publish;
 
-        return ($profit < 0 ? '-' : '') . 'Rp ' . number_format(abs($profit), 0, ',', '.');
+        return ($profit < 0 ? '-' : '').'Rp '.number_format(abs($profit), 0, ',', '.');
     }
 
     private static function rincianProfit(Get $get): string

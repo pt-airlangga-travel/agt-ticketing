@@ -6,7 +6,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -21,12 +20,12 @@ class RolesTable
             ->columns([
                 TextColumn::make('#')
                     ->rowIndex(),
-                    
+
                 TextColumn::make('name')
                     ->label('Nama Akses')
                     ->searchable(),
 
-                //count user
+                // count user
                 TextColumn::make('users_count')
                     ->counts('users')
                     ->alignCenter()

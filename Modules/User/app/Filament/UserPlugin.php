@@ -28,9 +28,9 @@ class UserPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Modules\\User\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Modules\\User\\Filament\\Pages')
-            ->discoverWidgets(in: __DIR__ . '/Widgets', for: 'Modules\\User\\Filament\\Widgets')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Modules\\User\\Filament\\Clusters'); // <- ini yang mungkin hilang/salah path
+            ->discoverResources(in: __DIR__.'/Resources', for: 'Modules\\User\\Filament\\Resources')
+            ->discoverPages(in: __DIR__.'/Pages', for: 'Modules\\User\\Filament\\Pages')
+            ->discoverWidgets(in: __DIR__.'/Widgets', for: 'Modules\\User\\Filament\\Widgets')
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Modules\\User\\Filament\\Clusters'); // <- ini yang mungkin hilang/salah path
     }
 }

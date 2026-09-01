@@ -2,15 +2,17 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\Ticketing\Database\Factories\TicketingPembayaranPenumpangFactory;
 
 class TicketingPembayaranPenumpang extends Model
 {
     use HasFactory;
 
-    protected $table ='ticketing_pembayaran_penumpang';
+    protected $table = 'ticketing_pembayaran_penumpang';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +27,7 @@ class TicketingPembayaranPenumpang extends Model
         'user_id',
         'bukti_pembayaran',
         'tgl_membayar',
-        'status_bukti_bayar'
+        'status_bukti_bayar',
     ];
 
     public function ticketingPembayar()
@@ -35,7 +37,7 @@ class TicketingPembayaranPenumpang extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function ticketingPembayaran()

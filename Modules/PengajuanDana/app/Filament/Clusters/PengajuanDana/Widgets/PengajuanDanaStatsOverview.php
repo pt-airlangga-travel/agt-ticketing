@@ -44,7 +44,7 @@ class PengajuanDanaStatsOverview extends StatsOverviewWidget
                 ->color('danger')
                 ->icon(Heroicon::OutlinedHandThumbDown),
 
-            Stat::make('Total Dana Tersalur', 'Rp ' . Number::format($totalDanaTersalur, 0, null, 'id'))
+            Stat::make('Total Dana Tersalur', 'Rp '.Number::format($totalDanaTersalur, 0, null, 'id'))
                 ->description('Dari submission selesai')
                 ->color('success')
                 ->icon(Heroicon::OutlinedArrowTrendingUp),

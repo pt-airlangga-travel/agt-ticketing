@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('tckt_pemesanan_id')
                 ->constrained('ticketing_pemesanan')
                 ->name('fk_tckt_pemesanan');
-             $table->foreignId('tckt_vendor_id')
+            $table->foreignId('tckt_vendor_id')
                 ->constrained('ticketing_vendor')
                 ->name('fk_tckt_vendor');
             $table->foreignId('tckt_kereta_id')

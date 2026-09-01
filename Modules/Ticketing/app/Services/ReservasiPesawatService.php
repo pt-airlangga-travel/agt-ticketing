@@ -3,8 +3,8 @@
 namespace Modules\Ticketing\Services;
 
 use Illuminate\Support\Facades\DB;
-use Modules\Ticketing\Models\TicketingPemesanan;
 use Modules\Ticketing\Models\TicketingPembayaran;
+use Modules\Ticketing\Models\TicketingPemesanan;
 use Modules\Ticketing\Models\TicketingTiketPesawat;
 
 class ReservasiPesawatService extends ReservasiService
@@ -111,7 +111,7 @@ class ReservasiPesawatService extends ReservasiService
 
     private function segmenPulang(mixed $rows): array
     {
-        if (!is_array($rows)) {
+        if (! is_array($rows)) {
             return [];
         }
 

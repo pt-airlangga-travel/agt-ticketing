@@ -41,16 +41,16 @@ class PrintInvoiceController extends Controller
             $bandaraBerangkatPulang = $tiket->ticketingBerangkatBandara::find($detail['bandara_berangkat_id_pulang'] ?? null);
             $bandaraTibaPulang = $tiket->ticketingTibaBandara::find($detail['bandara_tiba_id_pulang'] ?? null);
 
-            $rutePulang = ($bandaraBerangkatPulang?->kode_bandara ?? '-') . ' - ' . ($bandaraTibaPulang?->kode_bandara ?? '-');
+            $rutePulang = ($bandaraBerangkatPulang?->kode_bandara ?? '-').' - '.($bandaraTibaPulang?->kode_bandara ?? '-');
             $nomerPenerbanganPulang = $detail['nomor_penerbangan_pulang'] ?? '';
             $kodeBookingPulang = $detail['kode_booking_pesawat_pulang'] ?? '';
-            $jadwalBerangkatPulang = ($detail['tanggal_keberangkatan_pulang'] ?? '') . ' ' . ($detail['jam_keberangkatan_pulang'] ?? '');
+            $jadwalBerangkatPulang = ($detail['tanggal_keberangkatan_pulang'] ?? '').' '.($detail['jam_keberangkatan_pulang'] ?? '');
         }
 
         return $this->streamInvoice('pesawat', $pemesanan, [
             'nomer_penerbangan' => $tiket->nomor_penerbangan,
             'kode_booking' => $tiket->kode_booking_pesawat,
-            'rute_pesawat' => $tiket->ticketingBerangkatBandara->kode_bandara . ' - ' . $tiket->ticketingTibaBandara->kode_bandara,
+            'rute_pesawat' => $tiket->ticketingBerangkatBandara->kode_bandara.' - '.$tiket->ticketingTibaBandara->kode_bandara,
             'jadwal_berangkat_pesawat' => $tiket->jadwal_berangkat_pesawat,
             'pulang_pergi' => $pemesanan->pulang_pergi,
             'rute_pesawat_pulang' => $rutePulang,
@@ -86,7 +86,7 @@ class PrintInvoiceController extends Controller
 
         return $this->streamInvoice('kereta', $pemesanan, [
             'kode_booking' => $tiket->kode_booking_kereta,
-            'rute_kereta' => $tiket->ticketingBerangkatStasiun->nama_stasiun . ' - ' . $tiket->ticketingTibaStasiun->nama_stasiun,
+            'rute_kereta' => $tiket->ticketingBerangkatStasiun->nama_stasiun.' - '.$tiket->ticketingTibaStasiun->nama_stasiun,
             'jadwal_berangkat_kereta' => $tiket->jadwal_berangkat_kereta,
         ], $hargaSatuan, $hargaTotal, $penumpangTerpilih);
     }
@@ -166,8 +166,8 @@ class PrintInvoiceController extends Controller
             foreach ($penumpangs as $penumpang) {
                 if ($penumpang->id == $id) {
                     $nama = $penumpang->jenis_kelamin == 1
-                        ? 'Ms ' . $penumpang->nama_penumpang
-                        : 'Mr ' . $penumpang->nama_penumpang;
+                        ? 'Ms '.$penumpang->nama_penumpang
+                        : 'Mr '.$penumpang->nama_penumpang;
 
                     $pembayaranPenumpang = $penumpang->ticketingPembayaranPenumpang
                         ->filter(fn ($row) => $idPembayaran === null || $row->tckt_pembayaran_id == $idPembayaran)
@@ -197,7 +197,7 @@ class PrintInvoiceController extends Controller
 
     protected function streamInvoice(string $view, TicketingPemesanan $pemesanan, array $data, int $hargaSatuan, int $hargaTotal, array $penumpangTerpilih)
     {
-        $pdf = Pdf::loadView('ticketing::invoice.' . $view, array_merge($data, [
+        $pdf = Pdf::loadView('ticketing::invoice.'.$view, array_merge($data, [
             'nama_pemesan' => $pemesanan->nama_customer,
             'invoice' => $pemesanan->invoice,
             'logo_agt' => $this->convertBase64(public_path('img/logo-agt.png')),
@@ -206,8 +206,8 @@ class PrintInvoiceController extends Controller
             'unit_kerja_pemesan' => $pemesanan->ticketingUnitKerja?->nama_unit_kerja ?? '-',
             'unit_kerja_pembayar' => $pemesanan->ticketingPembayaran?->ticketingUnitKerja?->nama_unit_kerja ?? '-',
             'tanggal_pemesanan' => date('d-m-Y', strtotime($pemesanan->tanggal_pemesanan)),
-            'jatuh_tempo' => date('d-m-Y', strtotime($pemesanan->tanggal_pemesanan . ' + 7 days')),
-            'terbilang' => strtoupper($this->terbilang($hargaTotal)) . ' RUPIAH',
+            'jatuh_tempo' => date('d-m-Y', strtotime($pemesanan->tanggal_pemesanan.' + 7 days')),
+            'terbilang' => strtoupper($this->terbilang($hargaTotal)).' RUPIAH',
             'harga_satuan' => $hargaSatuan,
             'harga_total' => $hargaTotal,
             'penumpangs' => $penumpangTerpilih,
@@ -215,7 +215,7 @@ class PrintInvoiceController extends Controller
             ->setOptions(['defaultFont' => 'sans', 'isRemoteEnabled' => true])
             ->setPaper('a5', 'landscape');
 
-        return $pdf->stream('invoice-' . $view . '-' . $pemesanan->invoice . '.pdf');
+        return $pdf->stream('invoice-'.$view.'-'.$pemesanan->invoice.'.pdf');
     }
 
     protected function convertBase64(string $path): string
@@ -223,7 +223,7 @@ class PrintInvoiceController extends Controller
         $data = file_get_contents($path);
         $type = pathinfo($path, PATHINFO_EXTENSION);
 
-        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        return 'data:image/'.$type.';base64,'.base64_encode($data);
     }
 
     public function terbilang($angka)
@@ -233,41 +233,41 @@ class PrintInvoiceController extends Controller
         if ($angka < 12) {
             return $bilangan[$angka];
         } elseif ($angka < 20) {
-            return $bilangan[$angka - 10] . ' belas';
+            return $bilangan[$angka - 10].' belas';
         } elseif ($angka < 100) {
             $hasil_bagi = (int) ($angka / 10);
             $hasil_mod = $angka % 10;
 
-            return trim($bilangan[$hasil_bagi] . ' puluh ' . $bilangan[$hasil_mod]);
+            return trim($bilangan[$hasil_bagi].' puluh '.$bilangan[$hasil_mod]);
         } elseif ($angka < 200) {
-            return 'seratus ' . $this->terbilang($angka - 100);
+            return 'seratus '.$this->terbilang($angka - 100);
         } elseif ($angka < 1000) {
             $hasil_bagi = (int) ($angka / 100);
             $hasil_mod = $angka % 100;
 
-            return trim($bilangan[$hasil_bagi] . ' ratus ' . $this->terbilang($hasil_mod));
+            return trim($bilangan[$hasil_bagi].' ratus '.$this->terbilang($hasil_mod));
         } elseif ($angka < 2000) {
-            return 'seribu ' . $this->terbilang($angka - 1000);
+            return 'seribu '.$this->terbilang($angka - 1000);
         } elseif ($angka < 1000000) {
             $hasil_bagi = (int) ($angka / 1000);
             $hasil_mod = $angka % 1000;
 
-            return trim($this->terbilang($hasil_bagi) . ' ribu ' . $this->terbilang($hasil_mod));
+            return trim($this->terbilang($hasil_bagi).' ribu '.$this->terbilang($hasil_mod));
         } elseif ($angka < 1000000000) {
             $hasil_bagi = (int) ($angka / 1000000);
             $hasil_mod = $angka % 1000000;
 
-            return trim($this->terbilang($hasil_bagi) . ' juta ' . $this->terbilang($hasil_mod));
+            return trim($this->terbilang($hasil_bagi).' juta '.$this->terbilang($hasil_mod));
         } elseif ($angka < 1000000000000) {
             $hasil_bagi = (int) ($angka / 1000000000);
             $hasil_mod = fmod($angka, 1000000000);
 
-            return trim($this->terbilang($hasil_bagi) . ' milyar ' . $this->terbilang($hasil_mod));
+            return trim($this->terbilang($hasil_bagi).' milyar '.$this->terbilang($hasil_mod));
         } elseif ($angka < 1000000000000000) {
             $hasil_bagi = (int) ($angka / 1000000000000);
             $hasil_mod = fmod($angka, 1000000000000);
 
-            return trim($this->terbilang($hasil_bagi) . ' triliun ' . $this->terbilang($hasil_mod));
+            return trim($this->terbilang($hasil_bagi).' triliun '.$this->terbilang($hasil_mod));
         }
 
         return 'angka';

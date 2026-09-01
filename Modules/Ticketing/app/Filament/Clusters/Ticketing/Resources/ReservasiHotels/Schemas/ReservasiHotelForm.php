@@ -67,8 +67,6 @@ class ReservasiHotelForm
                     ->seconds(false)
                     ->required(),
 
-                ReservasiFormPartials::kolomZonaWaktu(),
-
                 DateTimePicker::make('jadwal_checkout')
                     ->label('Waktu Check-out')
                     ->seconds(false)

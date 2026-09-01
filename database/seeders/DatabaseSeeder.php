@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Ticketing\Database\Seeders\TicketingDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,7 +25,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RolePermissionSeeder::class,
-            \Modules\Ticketing\Database\Seeders\TicketingDatabaseSeeder::class,
+            TicketingDatabaseSeeder::class,
         ]);
     }
 }

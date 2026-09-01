@@ -2,13 +2,13 @@
 
 namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\Events\Tables;
 
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 
@@ -39,10 +39,10 @@ class EventsTable
                     ->label('Periode')
                     ->formatStateUsing(function ($state, $record) {
                         $mulai = $record->tanggal_mulai
-                            ? \Carbon\Carbon::parse($record->tanggal_mulai)->format('d M Y')
+                            ? Carbon::parse($record->tanggal_mulai)->format('d M Y')
                             : '-';
                         $selesai = $record->tanggal_selesai
-                            ? \Carbon\Carbon::parse($record->tanggal_selesai)->format('d M Y')
+                            ? Carbon::parse($record->tanggal_selesai)->format('d M Y')
                             : '-';
 
                         return new HtmlString(<<<HTML
@@ -60,7 +60,7 @@ class EventsTable
                 IconColumn::make('is_active')
                     ->label('Availability')
                     ->alignCenter()
-                    ->boolean()
+                    ->boolean(),
             ])
             ->filters([
                 //

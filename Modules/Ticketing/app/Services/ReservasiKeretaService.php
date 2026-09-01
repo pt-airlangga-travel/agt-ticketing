@@ -3,8 +3,8 @@
 namespace Modules\Ticketing\Services;
 
 use Illuminate\Support\Facades\DB;
-use Modules\Ticketing\Models\TicketingPemesanan;
 use Modules\Ticketing\Models\TicketingPembayaran;
+use Modules\Ticketing\Models\TicketingPemesanan;
 use Modules\Ticketing\Models\TicketingTiketKereta;
 
 class ReservasiKeretaService extends ReservasiService

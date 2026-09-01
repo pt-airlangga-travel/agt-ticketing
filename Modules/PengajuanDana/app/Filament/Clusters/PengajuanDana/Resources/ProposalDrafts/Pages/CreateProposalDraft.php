@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\PengajuanDana\Enums\ProposalDraftStatus;
 use Modules\PengajuanDana\Enums\ProposalSubmissionStatus;
-use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\Events\Pages\ListEvents;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Concerns\HasClusterSubNavigation;
+use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\Events\Pages\ListEvents;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\ProposalDraftResource;
 use Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalDrafts\Schemas\ProposalDraftCreateForm;
 use Modules\PengajuanDana\Models\Event;
@@ -106,14 +106,14 @@ class CreateProposalDraft extends CreateRecord
 
         $disk = Storage::disk('local');
 
-        if (! $disk->exists('proposal/' . $record->file_attached)) {
+        if (! $disk->exists('proposal/'.$record->file_attached)) {
             return;
         }
 
         $extension = pathinfo($record->file_attached, PATHINFO_EXTENSION);
-        $newName = $record->no_pengajuan . '.' . $extension;
+        $newName = $record->no_pengajuan.'.'.$extension;
 
-        $disk->move('proposal/' . $record->file_attached, 'proposal/' . $newName);
+        $disk->move('proposal/'.$record->file_attached, 'proposal/'.$newName);
         $record->forceFill(['file_attached' => $newName])->save();
     }
 }

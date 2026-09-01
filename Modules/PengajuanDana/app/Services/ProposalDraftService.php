@@ -20,7 +20,7 @@ class ProposalDraftService
             ->count() + 1;
 
         return $eventCode
-            . str_pad((string) $index, 3, '0', STR_PAD_LEFT)
-            . str_pad('0', 2, '0', STR_PAD_LEFT);
+            .str_pad((string) $index, 3, '0', STR_PAD_LEFT)
+            .str_pad('0', 2, '0', STR_PAD_LEFT);
     }
 }

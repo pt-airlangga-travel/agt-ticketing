@@ -64,7 +64,7 @@ class ProposalSubmissionsRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make('view-detail')
                     ->label('Lihat')
-                    ->modalHeading(fn ($record) => 'Detail Submission ' . self::formatDefinedId((string) $record->no_submission))
+                    ->modalHeading(fn ($record) => 'Detail Submission '.self::formatDefinedId((string) $record->no_submission))
                     ->schema(ProposalSubmissionViewSchema::getFields()),
             ])
             ->columns([
@@ -103,7 +103,7 @@ class ProposalSubmissionsRelationManager extends RelationManager
             ]);
     }
 
-    protected function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    protected function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->with(['needs', 'bankAccounts']);

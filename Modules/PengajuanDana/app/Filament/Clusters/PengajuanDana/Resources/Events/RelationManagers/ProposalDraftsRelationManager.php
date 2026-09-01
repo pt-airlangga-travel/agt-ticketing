@@ -68,7 +68,7 @@ class ProposalDraftsRelationManager extends RelationManager
 
                 TextColumn::make('total_vendor')
                     ->label('Total')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.')),
 
                 TextColumn::make('deadline_pembayaran')
                     ->label('Deadline')
@@ -103,9 +103,9 @@ class ProposalDraftsRelationManager extends RelationManager
                     ->label('Unduh')
                     ->icon(Heroicon::OutlinedArrowDownTray)
                     ->visible(fn ($record): bool => filled($record->file_attached)
-                        && Storage::disk('local')->exists('proposal/' . $record->file_attached))
+                        && Storage::disk('local')->exists('proposal/'.$record->file_attached))
                     ->action(fn ($record) => response()->download(
-                        Storage::disk('local')->path('proposal/' . $record->file_attached)
+                        Storage::disk('local')->path('proposal/'.$record->file_attached)
                     )),
 
                 EditAction::make()

@@ -8,16 +8,16 @@ trait HasFormattedNumber
     {
         if (strlen($number) > 12) {
             return substr($number, 0, 4)
-                . '.' . substr($number, 4, 2)
-                . '.' . substr($number, 6, 3)
-                . '.' . substr($number, 9, 3)
-                . '.' . substr($number, 12, 3)
-                . '.' . substr($number, 15, 2);
+                .'.'.substr($number, 4, 2)
+                .'.'.substr($number, 6, 3)
+                .'.'.substr($number, 9, 3)
+                .'.'.substr($number, 12, 3)
+                .'.'.substr($number, 15, 2);
         }
 
         return substr($number, 0, 4)
-            . '.' . substr($number, 4, 2)
-            . '.' . substr($number, 6, 3)
-            . '.' . substr($number, 9, 3);
+            .'.'.substr($number, 4, 2)
+            .'.'.substr($number, 6, 3)
+            .'.'.substr($number, 9, 3);
     }
 }

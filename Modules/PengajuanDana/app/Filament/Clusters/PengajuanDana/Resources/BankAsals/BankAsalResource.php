@@ -37,7 +37,6 @@ class BankAsalResource extends Resource
 
     // navigation group
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
- 
 
     public static function form(Schema $schema): Schema
     {

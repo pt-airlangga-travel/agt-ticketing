@@ -12,18 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ticketing_kamar_hotel_penumpang', function (Blueprint $table) {
-					$table->id();
-					$table->foreignId('tckt_penumpang_id')
-                        ->constrained('ticketing_penumpang')
-                        ->name('fk_tckt_penumpang');
-					$table->foreignId('tckt_kamar_hotel_id')
-                        ->constrained('ticketing_kamar_hotel')
-                        ->name('fk_tckt_kamar_hotel');
-                    $table->unique(
-                        ['tckt_penumpang_id', 'tckt_kamar_hotel_id'],
-                        'uq_penumpang_kamar_hotel'
-                    );
-					$table->timestamps();
+            $table->id();
+            $table->foreignId('tckt_penumpang_id')
+                ->constrained('ticketing_penumpang')
+                ->name('fk_tckt_penumpang');
+            $table->foreignId('tckt_kamar_hotel_id')
+                ->constrained('ticketing_kamar_hotel')
+                ->name('fk_tckt_kamar_hotel');
+            $table->unique(
+                ['tckt_penumpang_id', 'tckt_kamar_hotel_id'],
+                'uq_penumpang_kamar_hotel'
+            );
+            $table->timestamps();
         });
     }
 

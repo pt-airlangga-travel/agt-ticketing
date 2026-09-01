@@ -2,11 +2,10 @@
 
 namespace Modules\User\Filament\Clusters\User\Resources\Users;
 
+use App\Filament\Concerns\HasRbacPermission;
 use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
-
-use App\Filament\Concerns\HasRbacPermission;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -39,7 +38,6 @@ class UserResource extends Resource
 
     // navigaiton sort
     protected static ?int $navigationSort = 1;
-
 
     public static function form(Schema $schema): Schema
     {

@@ -2,8 +2,9 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\Ticketing\Database\Factories\TicketingBandaraFactory;
 
 class TicketingBandara extends Model

@@ -2,9 +2,10 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
+
 // use Modules\Ticketing\Database\Factories\TicketingKamarHotelFactory;
 
 class TicketingKamarHotel extends Model
@@ -12,7 +13,7 @@ class TicketingKamarHotel extends Model
     use HasFactory;
     use LogsReservasiActivity;
 
-    protected $table ='ticketing_kamar_hotel';
+    protected $table = 'ticketing_kamar_hotel';
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +28,7 @@ class TicketingKamarHotel extends Model
         'jadwal_checkin',
         'jadwal_checkout',
         'include_breakfast',
-        'zona_waktu'
+        'zona_waktu',
     ];
 
     public function ticketingVendor()
@@ -54,6 +55,4 @@ class TicketingKamarHotel extends Model
             'tckt_penumpang_id'
         );
     }
-
-
 }

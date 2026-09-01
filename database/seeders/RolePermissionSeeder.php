@@ -30,8 +30,8 @@ class RolePermissionSeeder extends Seeder
                 $permission = Permission::updateOrCreate(
                     ['name' => $name],
                     [
-                        'display_name' => Str::headline($action) . ' ' . Str::headline($resourceSlug),
-                        'description' => Str::headline($action) . ' data ' . Str::headline($resourceSlug) . ' (' . Str::headline($groupName) . ')',
+                        'display_name' => Str::headline($action).' '.Str::headline($resourceSlug),
+                        'description' => Str::headline($action).' data '.Str::headline($resourceSlug).' ('.Str::headline($groupName).')',
                         'group_name' => $groupName,
                         'is_active' => true,
                     ]
@@ -170,7 +170,7 @@ class RolePermissionSeeder extends Seeder
 
             $role->permissions()->sync($permIds);
 
-            $this->command?->line("  - {$name} ({$config['display_name']}) aktif=" . var_export($config['is_active'], true) . " perms=" . count($permIds));
+            $this->command?->line("  - {$name} ({$config['display_name']}) aktif=".var_export($config['is_active'], true).' perms='.count($permIds));
         }
 
         // =========================================================

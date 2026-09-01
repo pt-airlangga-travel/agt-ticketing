@@ -2,9 +2,9 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Concerns;
 
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -66,14 +66,17 @@ trait ListsReservasiByEntity
 
     protected function streamExportReservasi(): StreamedResponse
     {
-        $columns = $this->getReservasiExportColumns();
+        $columns = collect($this->getTable()->getVisibleColumns())
+            ->reject(fn ($column) => $column->getName() === '#')
+            ->values();
+
         $query = $this->getTableQueryForExport();
 
         return response()->streamDownload(function () use ($columns, $query): void {
             $writer = app(Writer::class);
             $writer->openToBrowser('reservasi_export.xlsx');
 
-            $writer->addRow(Row::fromValues(array_values($columns)));
+            $writer->addRow(Row::fromValues($columns->map(fn ($column) => $column->getLabel())->all()));
 
             foreach ($query->get() as $record) {
                 $penumpangs = $record->ticketingPenumpang?->all() ?? [];
@@ -85,25 +88,39 @@ trait ListsReservasiByEntity
                 foreach ($penumpangs as $penumpang) {
                     $row = [];
 
-                    foreach (array_keys($columns) as $column) {
-                        if ($column === 'penumpang') {
+                    foreach ($columns as $column) {
+                        $name = $column->getName();
+
+                        if ($name === 'ticketingPenumpang.nama_penumpang' || $name === 'penumpang') {
                             $value = $penumpang?->nama_penumpang;
-                        } elseif ($column === 'penumpang_pembayar') {
+                        } elseif ($name === 'pembayar_per_penumpang' || $name === 'penumpang_pembayar') {
                             $pembayaranId = $record->ticketingPemesanan?->ticketingPembayaran?->id;
                             $pembayaran = $penumpang?->ticketingPembayaranPenumpang
                                 ->where('tckt_pembayaran_id', $pembayaranId)
                                 ->first();
-                            $value = $pembayaran?->ticketingPembayar?->nama_pembayar ?? ($pembayaran?->nama_pembayar ?? null);
+                            $value = $pembayaran?->ticketingPembayar?->nama_pembayar ?? ($pembayaran?->nama_pembayar ?? '-');
+                            $unit = $pembayaran?->ticketingUnitKerja?->nama_unit_kerja;
+                            $value = $unit ? "{$value} ({$unit})" : $value;
+                            if ($penumpang === null) {
+                                $value = data_get($record, $name) ?? $value;
+                            }
                         } else {
-                            $value = data_get($record, $column);
+                            $value = data_get($record, $name);
                         }
 
-                        if (str_ends_with($column, 'include_breakfast')) {
+                        if (str_ends_with($name, 'include_breakfast')) {
                             $value = $value ? 'Ya' : 'Tidak';
                         }
 
-                        if (str_ends_with($column, 'pulang_pergi')) {
+                        if (str_ends_with($name, 'pulang_pergi')) {
                             $value = $value ? 'Ya' : 'Tidak';
+                        }
+
+                        if (in_array($name, ['jadwal_berangkat_pesawat', 'jadwal_tiba_pesawat', 'jadwal_berangkat_kereta', 'jadwal_tiba_kereta', 'jadwal_checkin', 'jadwal_checkout'], true) && filled($value)) {
+                            try {
+                                $value = Carbon::parse($value)->format('d M Y H:i');
+                            } catch (\Throwable $e) {
+                            }
                         }
 
                         if (is_null($value)) {

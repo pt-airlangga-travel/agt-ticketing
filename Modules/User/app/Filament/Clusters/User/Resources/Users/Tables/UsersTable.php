@@ -51,7 +51,7 @@ class UsersTable
             ])
             ->recordActions([
                 ViewAction::make()->button()->hiddenLabel(),
-                EditAction::make()->button()->hiddenLabel()
+                EditAction::make()->button()->hiddenLabel(),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([

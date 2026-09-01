@@ -5,6 +5,7 @@ namespace Modules\Ticketing\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class TicketingActivityLog extends Model
 {
@@ -33,7 +34,7 @@ class TicketingActivityLog extends Model
         return $this->belongsTo(TicketingPemesanan::class, 'tckt_pemesanan_id');
     }
 
-    public function entity(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    public function entity(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'entity_type', 'entity_id');
     }

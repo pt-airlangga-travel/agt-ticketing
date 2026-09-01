@@ -2,6 +2,7 @@
 
 namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\ProposalSubmissions\Schemas;
 
+use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -11,7 +12,7 @@ use Modules\PengajuanDana\Models\Need;
 class ProposalSubmissionCreateSchema
 {
     /**
-     * @return array<int, \Filament\Forms\Components\Field>
+     * @return array<int, Field>
      */
     public static function getFields(): array
     {

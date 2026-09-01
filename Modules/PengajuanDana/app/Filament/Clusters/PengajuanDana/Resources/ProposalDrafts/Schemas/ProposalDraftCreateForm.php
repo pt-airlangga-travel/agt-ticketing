@@ -33,7 +33,7 @@ class ProposalDraftCreateForm
                         Placeholder::make('event_display')
                             ->label('Event')
                             ->content(fn ($get) => Event::find($get('event_id'))?->nama),
-                            // ->columnSpanFull(),
+                        // ->columnSpanFull(),
 
                         TextInput::make('event_id')
                             ->hidden()
@@ -117,7 +117,7 @@ class ProposalDraftCreateForm
                                     fn ($vendor) => (int) self::parseRupiah($vendor['sub_total'] ?? 0)
                                 );
 
-                                return 'Rp ' . number_format($total, 0, ',', '.');
+                                return 'Rp '.number_format($total, 0, ',', '.');
                             })
                             ->columnSpanFull(),
 
@@ -155,7 +155,6 @@ class ProposalDraftCreateForm
                             ]),
                     ]),
 
-                
             ]);
     }
 }

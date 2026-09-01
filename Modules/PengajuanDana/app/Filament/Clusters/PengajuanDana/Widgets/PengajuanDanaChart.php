@@ -10,7 +10,7 @@ class PengajuanDanaChart extends ChartWidget
 {
     protected static ?int $sort = 2;
 
-    public function getHeading(): string | Htmlable | null
+    public function getHeading(): string|Htmlable|null
     {
         return 'Submission per Bulan';
     }

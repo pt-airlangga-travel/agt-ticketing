@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
+
         Schema::create('ticketing_kamar_hotel', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tckt_hotel_id')

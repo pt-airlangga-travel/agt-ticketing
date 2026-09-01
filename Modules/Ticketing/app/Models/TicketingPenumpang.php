@@ -2,22 +2,23 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\Ticketing\Database\Factories\TicketingPenumpangFactory;
 
 class TicketingPenumpang extends Model
 {
     use HasFactory;
 
-    protected $table ='ticketing_penumpang';
+    protected $table = 'ticketing_penumpang';
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
         'nama_penumpang',
-        'jenis_kelamin'
+        'jenis_kelamin',
     ];
 
     public function ticketingUnitKerja()

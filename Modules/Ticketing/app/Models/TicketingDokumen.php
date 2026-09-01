@@ -2,9 +2,10 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
+
 // use Modules\Ticketing\Database\Factories\TicketingDokumenFactory;
 
 class TicketingDokumen extends Model
@@ -21,7 +22,7 @@ class TicketingDokumen extends Model
         'tckt_vendor_id',
         'tckt_pemesanan_id',
         'jenis_dokumen',
-        'keterangan'
+        'keterangan',
     ];
 
     public function ticketingPemesanan()

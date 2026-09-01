@@ -9,7 +9,7 @@ return [
 
     // optional, default is 'abcdefghijklmnpqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     'charset' => '123456789',
-    
+
     'width' => 195,
 
     'height' => 65,

@@ -123,7 +123,7 @@ class ProposalSubmissionsTable
                     ->color('success')
                     ->requiresConfirmation()
                     ->modalHeading('Setujui Submission')
-                    ->modalDescription(fn ($record): string => 'Setujui submission ' . $record->no_submission . '?')
+                    ->modalDescription(fn ($record): string => 'Setujui submission '.$record->no_submission.'?')
                     ->visible(fn ($record): bool => static::canApprove($record))
                     ->action(function ($record): void {
                         try {
@@ -161,7 +161,7 @@ class ProposalSubmissionsTable
                         ->icon(Heroicon::OutlinedBanknotes)
                         ->color('primary')
                         ->modalHeading('Input Bukti Transfer')
-                        ->modalDescription(fn ($record): string => 'Submission ' . $record->no_submission)
+                        ->modalDescription(fn ($record): string => 'Submission '.$record->no_submission)
                         ->form(fn ($record): array => [
                             Select::make('judan_bank_account_id')
                                 ->label('Rekening Tujuan')
@@ -225,7 +225,7 @@ class ProposalSubmissionsTable
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Konfirmasi Selesai')
-                        ->modalDescription(fn ($record): string => 'Tandai submission ' . $record->no_submission . ' sebagai selesai (reimburse berhasil)?')
+                        ->modalDescription(fn ($record): string => 'Tandai submission '.$record->no_submission.' sebagai selesai (reimburse berhasil)?')
                         ->action(function ($record): void {
                             try {
                                 app(ProposalSubmissionService::class)->complete($record);
@@ -240,7 +240,7 @@ class ProposalSubmissionsTable
                         ->icon(Heroicon::OutlinedHandThumbDown)
                         ->color('danger')
                         ->modalHeading('Tolak Reimburse')
-                        ->modalDescription(fn ($record): string => 'Submission ' . $record->no_submission . ' akan ditandai ditolak.')
+                        ->modalDescription(fn ($record): string => 'Submission '.$record->no_submission.' akan ditandai ditolak.')
                         ->form([
                             Textarea::make('catatan')
                                 ->label('Alasan Penolakan')

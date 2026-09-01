@@ -49,8 +49,8 @@ class ProposalDraftsTable
                             return $record->event?->nama;
                         }
 
-                        return '<div>' . e($record->event->nama) . '</div>'
-                            . '<div class="text-xs text-gray-400 dark:text-gray-500">' . e($identity) . '</div>';
+                        return '<div>'.e($record->event->nama).'</div>'
+                            .'<div class="text-xs text-gray-400 dark:text-gray-500">'.e($identity).'</div>';
                     })
                     ->html()
                     ->wrap()
@@ -92,9 +92,9 @@ class ProposalDraftsTable
                     ->icon(fn ($state) => filled($state) ? Heroicon::OutlinedArrowDownTray : null)
                     ->color('primary')
                     ->action(function ($record) {
-                        if (filled($record->file_attached) && Storage::disk('local')->exists('proposal/' . $record->file_attached)) {
+                        if (filled($record->file_attached) && Storage::disk('local')->exists('proposal/'.$record->file_attached)) {
                             return response()->download(
-                                Storage::disk('local')->path('proposal/' . $record->file_attached)
+                                Storage::disk('local')->path('proposal/'.$record->file_attached)
                             );
                         }
                     }),
@@ -123,7 +123,7 @@ class ProposalDraftsTable
                     ->icon(Heroicon::OutlinedPaperAirplane)
                     ->color('primary')
                     ->modalHeading('Buat Proposal Submission')
-                    ->modalDescription(fn ($record): string => 'Ajukan ' . self::formatDefinedId($record->no_pengajuan) . ' (' . $record->event?->nama . ')?')
+                    ->modalDescription(fn ($record): string => 'Ajukan '.self::formatDefinedId($record->no_pengajuan).' ('.$record->event?->nama.')?')
                     ->form(ProposalSubmissionCreateSchema::getFields())
                     ->visible(fn ($record): bool => $record->status === ProposalDraftStatus::Menunggu
                         && auth()->user()?->canAccess(ProposalSubmissionResource::getRbacPermissionNames()['create']))
@@ -140,9 +140,9 @@ class ProposalDraftsTable
                     ->label('Unduh')
                     ->icon(Heroicon::OutlinedArrowDownTray)
                     ->visible(fn ($record): bool => filled($record->file_attached)
-                        && Storage::disk('local')->exists('proposal/' . $record->file_attached))
+                        && Storage::disk('local')->exists('proposal/'.$record->file_attached))
                     ->action(fn ($record) => response()->download(
-                        Storage::disk('local')->path('proposal/' . $record->file_attached)
+                        Storage::disk('local')->path('proposal/'.$record->file_attached)
                     )),
 
                 EditAction::make()

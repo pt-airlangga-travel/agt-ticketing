@@ -23,6 +23,7 @@ class ReservasiPesawatForm
             ->columns(1)
             ->components([
                 Section::make('Pemesan')->schema(ReservasiFormPartials::kolomPemesan()),
+                Section::make('Pembayar')->schema(ReservasiFormPartials::kolomPembayar()),
                 Section::make('Harga')->schema(ReservasiFormPartials::kolomHarga()),
                 Section::make('Round Trip')->schema(self::kolomRoundTrip()),
                 Section::make('Maskapai Pergi (Keberangkatan)')->schema(self::kolomPenerbangan()),
@@ -53,9 +54,10 @@ class ReservasiPesawatForm
                     ->required(),
 
                 Select::make('status_pemesanan_pulang_pergi')
-                    ->label('Status')
+                    ->label('Status Pulang Pergi')
                     ->options(ReservasiFormPartials::statusOptions())
-                    ->required(),
+                    ->visible(fn (Get $get) => (int) ($get('pulang_pergi') ?? 0) === 1)
+                    ->required(fn (Get $get) => (int) ($get('pulang_pergi') ?? 0) === 1),
             ]),
         ];
     }

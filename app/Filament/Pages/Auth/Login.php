@@ -2,19 +2,18 @@
 
 namespace App\Filament\Pages\Auth;
 
-use Filament\Auth\Http\Responses\Contracts\LoginResponse;
-// use Filament\Auth\Pages\Login as BaseLogin;
 use Caresome\FilamentAuthDesigner\Pages\Auth\Login as BaseLogin;
+// use Filament\Auth\Pages\Login as BaseLogin;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use MarcoGermani87\FilamentCaptcha\Forms\Components\CaptchaField;
-use Illuminate\Support\HtmlString;
 
 class Login extends BaseLogin
-{    
+{
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -40,9 +39,10 @@ class Login extends BaseLogin
             ->autocomplete();
     }
 
-    protected  function getCredentialsFromFormData(array $data): array
+    protected function getCredentialsFromFormData(array $data): array
     {
         $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
         return [
             $login_type => $data['login'],
             'password' => $data['password'],

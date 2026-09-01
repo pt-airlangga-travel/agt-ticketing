@@ -2,9 +2,10 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
+
 // use Modules\Ticketing\Database\Factories\TicketingTiketKeretaFactory;
 
 class TicketingTiketKereta extends Model
@@ -12,7 +13,7 @@ class TicketingTiketKereta extends Model
     use HasFactory;
     use LogsReservasiActivity;
 
-    protected $table ='ticketing_tiket_kereta';
+    protected $table = 'ticketing_tiket_kereta';
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +28,7 @@ class TicketingTiketKereta extends Model
         'jadwal_berangkat_kereta',
         'jadwal_tiba_kereta',
         'zona_waktu',
-        'zona_waktu_kedatangan'
+        'zona_waktu_kedatangan',
     ];
 
     public function ticketingPemesanan()

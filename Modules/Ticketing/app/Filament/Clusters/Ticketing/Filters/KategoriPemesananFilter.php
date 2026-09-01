@@ -35,7 +35,7 @@ class KategoriPemesananFilter extends SelectFilter
                 return [];
             }
 
-            return ['Kategori: ' . (TicketingKategoriPemesanan::find($state['value'])?->nama_kategori ?? $state['value'])];
+            return ['Kategori: '.(TicketingKategoriPemesanan::find($state['value'])?->nama_kategori ?? $state['value'])];
         });
     }
 

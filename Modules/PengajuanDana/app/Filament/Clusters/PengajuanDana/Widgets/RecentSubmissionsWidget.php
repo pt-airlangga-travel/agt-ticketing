@@ -43,7 +43,7 @@ class RecentSubmissionsWidget extends TableWidget
 
                 TextColumn::make('total')
                     ->label('Total')
-                    ->getStateUsing(fn ($record): string => 'Rp ' . number_format((float) $record->bankAccounts->sum('sub_total'), 0, ',', '.')),
+                    ->getStateUsing(fn ($record): string => 'Rp '.number_format((float) $record->bankAccounts->sum('sub_total'), 0, ',', '.')),
 
                 TextColumn::make('status')
                     ->label('Status')

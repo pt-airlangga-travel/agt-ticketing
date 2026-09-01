@@ -41,6 +41,8 @@ class EditReservasiPesawat extends EditRecord
         $data['harga_publish'] = $pemesanan?->harga_publish;
         $data['harga_jual'] = $pemesanan?->harga_jual;
         $data['pulang_pergi'] = $pemesanan?->pulang_pergi;
+        $data['nama_pembayar'] = $pemesanan?->ticketingPembayaran?->nama_pembayar;
+        $data['unit_kerja_pembayar'] = $pemesanan?->ticketingPembayaran?->tckt_unit_kerja_id;
 
         if ($tiket) {
             $data['maskapai_id'] = $tiket->tckt_maskapai_id;

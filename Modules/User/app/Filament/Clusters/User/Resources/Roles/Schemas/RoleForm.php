@@ -46,7 +46,7 @@ class RoleForm
         foreach ($groups as $group => $permissions) {
             $components[] = Section::make($group ?? 'Other')
                 ->schema([
-                    CheckboxList::make("permissions_" . ($group ?? 'other'))
+                    CheckboxList::make('permissions_'.($group ?? 'other'))
                         ->label('Izin Akses')
                         ->options(
                             $permissions->pluck('display_name', 'id')->toArray()

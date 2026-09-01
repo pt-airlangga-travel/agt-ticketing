@@ -3,9 +3,9 @@
 namespace Modules\Ticketing\Services;
 
 use Illuminate\Support\Facades\DB;
-use Modules\Ticketing\Models\TicketingPemesanan;
-use Modules\Ticketing\Models\TicketingPembayaran;
 use Modules\Ticketing\Models\TicketingDokumen;
+use Modules\Ticketing\Models\TicketingPembayaran;
+use Modules\Ticketing\Models\TicketingPemesanan;
 
 class ReservasiDokumenService extends ReservasiService
 {

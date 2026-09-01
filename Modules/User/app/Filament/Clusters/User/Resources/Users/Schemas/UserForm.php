@@ -19,22 +19,22 @@ class UserForm
                             ->label('Nama')
                             ->required()
                             ->maxLength(255),
-        
+
                         TextInput::make('username')
                             ->label('Username')
                             ->required()
                             ->maxLength(255),
-        
+
                         TextInput::make('email')
                             ->label('Email')
                             ->email()
                             ->required()
                             ->unique(ignoreRecord: true),
-        
+
                         TextInput::make('phone')
                             ->label('No Telepon')
                             ->unique(ignoreRecord: true),
-        
+
                         Select::make('roles')
                             ->label('Roles')
                             ->relationship(

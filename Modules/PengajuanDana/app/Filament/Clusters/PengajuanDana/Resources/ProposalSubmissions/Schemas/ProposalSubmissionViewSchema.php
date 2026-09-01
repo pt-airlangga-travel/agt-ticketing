@@ -5,15 +5,15 @@ namespace Modules\PengajuanDana\Filament\Clusters\PengajuanDana\Resources\Propos
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Modules\PengajuanDana\Enums\ProposalSubmissionStatus;
 use Modules\PengajuanDana\Models\Bank;
-use Modules\PengajuanDana\Models\Need;
 
 class ProposalSubmissionViewSchema
 {
     /**
-     * @return array<int, \Filament\Schemas\Components\Component>
+     * @return array<int, Component>
      */
     public static function getFields(): array
     {

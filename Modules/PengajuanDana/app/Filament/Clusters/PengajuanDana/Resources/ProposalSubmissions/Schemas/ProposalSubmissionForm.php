@@ -44,7 +44,7 @@ class ProposalSubmissionForm
                                 ->with('event')
                                 ->find($get('judan_proposal_draft_id'));
 
-                            return $draft ? self::formatDefinedId($draft->no_pengajuan) . ' - ' . $draft->event?->nama : null;
+                            return $draft ? self::formatDefinedId($draft->no_pengajuan).' - '.$draft->event?->nama : null;
                         }),
 
                     TextInput::make('booking_code')

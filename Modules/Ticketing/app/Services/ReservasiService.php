@@ -14,25 +14,25 @@ abstract class ReservasiService
         $month = $today->format('m');
 
         $latestInvoice = DB::select(
-            "SELECT invoice FROM ticketing_pemesanan
+            'SELECT invoice FROM ticketing_pemesanan
              WHERE YEAR(created_at) = YEAR(CURDATE())
                AND MONTH(created_at) = MONTH(CURDATE())
                AND SUBSTRING(invoice,5,1) = ?
-             ORDER BY id DESC LIMIT 1",
+             ORDER BY id DESC LIMIT 1',
             [$jenisReservasi]
         );
 
         $sequenceNumber = 1;
-        if (!empty($latestInvoice)) {
+        if (! empty($latestInvoice)) {
             $sequenceNumber = intval(substr($latestInvoice[0]->invoice, -4)) + 1;
         }
 
-        return $lastTwoDigitsOfYear . $month . $jenisReservasi . sprintf('%04d', $sequenceNumber);
+        return $lastTwoDigitsOfYear.$month.$jenisReservasi.sprintf('%04d', $sequenceNumber);
     }
 
     protected function toDate(mixed $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 
@@ -50,16 +50,16 @@ abstract class ReservasiService
 
     protected function toDateTime(mixed $date, mixed $time): ?string
     {
-        if (!$date) {
+        if (! $date) {
             return null;
         }
 
-        return $this->toDate($date) . ' ' . $this->normalizeTime($time);
+        return $this->toDate($date).' '.$this->normalizeTime($time);
     }
 
     protected function normalizeDateTime(mixed $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 

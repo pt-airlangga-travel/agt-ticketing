@@ -2,13 +2,15 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\Ticketing\Database\Factories\TicketingVendorFactory;
 
 class TicketingVendor extends Model
 {
     use HasFactory;
+
     protected $table = 'ticketing_vendor';
 
     /**

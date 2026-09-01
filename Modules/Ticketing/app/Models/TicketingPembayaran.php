@@ -2,9 +2,10 @@
 
 namespace Modules\Ticketing\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
+
 // use Modules\Ticketing\Database\Factories\TicketingPembayaranFactory;
 
 class TicketingPembayaran extends Model
@@ -12,7 +13,7 @@ class TicketingPembayaran extends Model
     use HasFactory;
     use LogsReservasiActivity;
 
-    protected $table ='ticketing_pembayaran';
+    protected $table = 'ticketing_pembayaran';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +21,7 @@ class TicketingPembayaran extends Model
     protected $fillable = [
         'tckt_unit_kerja_id',
         'tckt_pemesanan_id',
-        'nama_pembayar'
+        'nama_pembayar',
     ];
 
     public function ticketingPemesanan()

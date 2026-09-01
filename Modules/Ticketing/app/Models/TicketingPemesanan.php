@@ -2,11 +2,13 @@
 
 namespace Modules\Ticketing\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
+
 // use Modules\Ticketing\Database\Factories\TicketingPemesananFactory;
 
 class TicketingPemesanan extends Model
@@ -50,7 +52,7 @@ class TicketingPemesanan extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function ticketingKategoriPemesanan()
@@ -99,13 +101,14 @@ class TicketingPemesanan extends Model
         } elseif ($this->ticketingDokumen) {
             return $this->ticketingDokumen->ticketingPenumpang();
         }
+
         return null;
     }
 
     public function ticketingTerbayar($id = null)
     {
         $pembayaran = $this->ticketingPembayaran;
-        if (!$pembayaran) {
+        if (! $pembayaran) {
             return 0;
         }
 

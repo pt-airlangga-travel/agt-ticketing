@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ticketing_kategori_pemesanan', function (Blueprint $table) {
-            //1 ticket 2 tour
+            // 1 ticket 2 tour
             $table->id();
             $table->string('nama_kategori');
             $table->timestamps();

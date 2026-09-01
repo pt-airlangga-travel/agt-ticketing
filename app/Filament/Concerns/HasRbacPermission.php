@@ -59,16 +59,16 @@ trait HasRbacPermission
     public static function getRbacPermissionNames(): array
     {
         return [
-            'view' => static::getRbacGroup() . '.' . static::getRbacResource() . '.view',
-            'create' => static::getRbacGroup() . '.' . static::getRbacResource() . '.create',
-            'edit' => static::getRbacGroup() . '.' . static::getRbacResource() . '.edit',
-            'delete' => static::getRbacGroup() . '.' . static::getRbacResource() . '.delete',
+            'view' => static::getRbacGroup().'.'.static::getRbacResource().'.view',
+            'create' => static::getRbacGroup().'.'.static::getRbacResource().'.create',
+            'edit' => static::getRbacGroup().'.'.static::getRbacResource().'.edit',
+            'delete' => static::getRbacGroup().'.'.static::getRbacResource().'.delete',
         ];
     }
 
     protected static function rbacPermission(string $action): string
     {
-        return static::getRbacGroup() . '.' . static::getRbacResource() . '.' . static::rbacAction($action);
+        return static::getRbacGroup().'.'.static::getRbacResource().'.'.static::rbacAction($action);
     }
 
     public static function canViewAny(): bool
