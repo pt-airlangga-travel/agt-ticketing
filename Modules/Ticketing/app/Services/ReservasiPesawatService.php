@@ -3,6 +3,7 @@
 namespace Modules\Ticketing\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\Ticketing\Models\TicketingPembayaran;
 use Modules\Ticketing\Models\TicketingPemesanan;
 use Modules\Ticketing\Models\TicketingTiketPesawat;
@@ -33,7 +34,7 @@ class ReservasiPesawatService extends ReservasiService
                 'nama_pembayar' => $data['nama_pembayar'] ?? null,
             ]);
 
-            $tiket = TicketingTiketPesawat::create([
+            $tiketData = [
                 'tckt_pemesanan_id' => $pemesanan->id,
                 'tckt_maskapai_id' => $data['maskapai_id'] ?? null,
                 'tckt_vendor_id' => $data['vendor_id'] ?? null,
@@ -49,7 +50,9 @@ class ReservasiPesawatService extends ReservasiService
                 'zona_waktu' => $data['zona_waktu'] ?? null,
                 'zona_waktu_kedatangan' => $data['zona_waktu_kedatangan'] ?? null,
                 'detail_pulang_pergi' => $this->detailPulangPergi($data, $segmenPulang),
-            ]);
+            ];
+
+            $tiket = TicketingTiketPesawat::create($this->filterTiketColumns($tiketData));
 
             return $tiket;
         });
@@ -86,7 +89,7 @@ class ReservasiPesawatService extends ReservasiService
                 TicketingPembayaran::create($dataPembayaran);
             }
 
-            $tiket->update([
+            $tiketData = [
                 'tckt_maskapai_id' => $data['maskapai_id'] ?? $tiket->tckt_maskapai_id,
                 'tckt_vendor_id' => $data['vendor_id'] ?? $tiket->tckt_vendor_id,
                 'tckt_bandara_berangkat_id' => $data['bandara_berangkat_id'] ?? $tiket->tckt_bandara_berangkat_id,
@@ -103,7 +106,9 @@ class ReservasiPesawatService extends ReservasiService
                 'zona_waktu' => $data['zona_waktu'] ?? $tiket->zona_waktu,
                 'zona_waktu_kedatangan' => $data['zona_waktu_kedatangan'] ?? $tiket->zona_waktu_kedatangan,
                 'detail_pulang_pergi' => $this->detailPulangPergi($data, $segmenPulang),
-            ]);
+            ];
+
+            $tiket->update($this->filterTiketColumns($tiketData));
 
             return $tiket;
         });
@@ -146,5 +151,22 @@ class ReservasiPesawatService extends ReservasiService
             'status_pemesanan_pulang_pergi' => $data['status_pemesanan_pulang_pergi'] ?? null,
             'segmen' => $segmenPulang,
         ]);
+    }
+
+    /**
+     * Filter kolom yang belum ada di DB (mis. migrasi tertunda di production).
+     */
+    private function filterTiketColumns(array $data): array
+    {
+        // Daftar kolom yang mungkin belum ada jika migrasi tertunda
+        $maybeMissing = ['jenis_penerbangan'];
+
+        foreach ($maybeMissing as $col) {
+            if (array_key_exists($col, $data) && ! Schema::hasColumn('ticketing_tiket_pesawat', $col)) {
+                unset($data[$col]);
+            }
+        }
+
+        return $data;
     }
 }

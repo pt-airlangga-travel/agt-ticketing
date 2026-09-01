@@ -17,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Modules\Ticketing\Models\TicketingPembayar;
 use Modules\Ticketing\Models\TicketingPembayaranPenumpang;
 use Modules\Ticketing\Models\TicketingUnitKerja;
@@ -70,8 +71,15 @@ class RiwayatPembayaranRelationManager extends RelationManager
 
             Select::make('tckt_pembayar_id')
                 ->label('Nama Pembayar')
-                ->options(fn () => TicketingPembayar::query()
-                    ->pluck('nama_pembayar', 'id'))
+                ->options(function (): array {
+                    if (! Schema::hasTable('ticketing_pembayar')) {
+                        return [];
+                    }
+
+                    return TicketingPembayar::query()
+                        ->pluck('nama_pembayar', 'id')
+                        ->all();
+                })
                 ->searchable()
                 ->preload(),
 
