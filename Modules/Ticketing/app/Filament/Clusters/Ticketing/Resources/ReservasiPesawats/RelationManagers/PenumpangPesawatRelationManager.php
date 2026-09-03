@@ -111,13 +111,13 @@ class PenumpangPesawatRelationManager extends RelationManager
                             'user_id' => auth()->id(),
                         ];
 
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
                             unset($payload['tckt_pembayar_id']);
                         }
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
                             unset($payload['tckt_unit_kerja_id']);
                         }
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
                             unset($payload['nama_pembayar']);
                         }
 
@@ -149,10 +149,10 @@ class PenumpangPesawatRelationManager extends RelationManager
                             'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
                             'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
                         ];
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
                             unset($payload['tckt_pembayar_id']);
                         }
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
                             unset($payload['tckt_unit_kerja_id']);
                         }
 
