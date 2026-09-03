@@ -54,8 +54,7 @@ class UserForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->minLength(8)
                             ->maxLength(255)
-                            ->dehydrated(fn (?string $state): bool => filled($state))
-                            ->confirmed(),
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
 
                         
                     ])->columnspanfull(),
