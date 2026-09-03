@@ -4,8 +4,10 @@ namespace Modules\Ticketing\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Ticketing\Models\TicketingActivityLog;
 use Modules\Ticketing\Models\TicketingPemesanan;
+use Modules\Ticketing\Models\TicketingPenumpang;
 
 trait LogsReservasiActivity
 {
@@ -54,7 +56,45 @@ trait LogsReservasiActivity
             return (int) $this->getKey();
         }
 
-        return isset($this->tckt_pemesanan_id) ? (int) $this->tckt_pemesanan_id : null;
+        if (isset($this->tckt_pemesanan_id)) {
+            return (int) $this->tckt_pemesanan_id;
+        }
+
+        // Untuk model yang link via pembayaran (mis. TicketingPembayaranPenumpang)
+        if (isset($this->tckt_pembayaran_id)) {
+            $pembayaran = $this->ticketingPembayaran ?? null;
+            if ($pembayaran && isset($pembayaran->tckt_pemesanan_id)) {
+                return (int) $pembayaran->tckt_pemesanan_id;
+            }
+            // Fallback query langsung jika relasi belum load
+            try {
+                $pid = DB::table('ticketing_pembayaran')
+                    ->where('id', $this->tckt_pembayaran_id)
+                    ->value('tckt_pemesanan_id');
+                if ($pid) {
+                    return (int) $pid;
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
+        // Untuk TicketingPenumpang yang via pivot (tidak simpan pemesanan_id langsung)
+        if ($this instanceof TicketingPenumpang) {
+            // Coba ambil dari tiket pesawat/kereta/hotel/dokumen pertama yang terkait
+            try {
+                foreach (['ticketingTiketPesawat', 'ticketingTiketKereta', 'ticketingKamarHotel', 'ticketingDokumen'] as $rel) {
+                    if (method_exists($this, $rel)) {
+                        $related = $this->$rel()->first();
+                        if ($related && isset($related->tckt_pemesanan_id)) {
+                            return (int) $related->tckt_pemesanan_id;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
+        return null;
     }
 
     protected function resolveActivityChanges(string $event): ?array

@@ -7,6 +7,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingActivityLogs\Pages\ListTicketingActivityLogs;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingActivityLogs\Tables\TicketingActivityLogsTable;
 use Modules\Ticketing\Filament\Clusters\Ticketing\TicketingCluster;
@@ -32,6 +33,26 @@ class TicketingActivityLogResource extends Resource
     protected static ?string $cluster = TicketingCluster::class;
 
     protected static ?string $recordTitleAttribute = 'Log Aktivitas';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()->with(['user', 'pemesanan']);
+
+        $user = auth()->user();
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->canAccess(static::getRbacPermissionNames()['view'])) {
+            return $query;
+        }
+
+        // Terbatas: hanya log untuk reservasi miliknya atau yang dia yang lakukan
+        return $query->where(function (Builder $q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhereHas('pemesanan', fn (Builder $qq) => $qq->where('created_by', $user->id));
+        });
+    }
 
     public static function table(Table $table): Table
     {

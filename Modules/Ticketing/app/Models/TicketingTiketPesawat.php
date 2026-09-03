@@ -4,6 +4,8 @@ namespace Modules\Ticketing\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Schema;
 use Modules\Ticketing\Models\Concerns\LogsReservasiActivity;
 
 // use Modules\Ticketing\Database\Factories\TicketingTiketPesawatFactory;
@@ -14,6 +16,35 @@ class TicketingTiketPesawat extends Model
     use LogsReservasiActivity;
 
     protected $table = 'ticketing_tiket_pesawat';
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $model): void {
+            if (array_key_exists('jenis_penerbangan', $model->getAttributes())) {
+                try {
+                    if (! Schema::hasColumn('ticketing_tiket_pesawat', 'jenis_penerbangan')) {
+                        unset($model->jenis_penerbangan);
+                    }
+                } catch (\Throwable $e) {
+                }
+            }
+        });
+    }
+
+    public function save(array $options = []): bool
+    {
+        try {
+            return parent::save($options);
+        } catch (QueryException $e) {
+            if (str_contains($e->getMessage(), "Unknown column 'jenis_penerbangan'")) {
+                unset($this->attributes['jenis_penerbangan']);
+
+                return parent::save($options);
+            }
+
+            throw $e;
+        }
+    }
 
     /**
      * The attributes that are mass assignable.

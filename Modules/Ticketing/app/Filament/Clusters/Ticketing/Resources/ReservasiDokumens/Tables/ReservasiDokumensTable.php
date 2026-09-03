@@ -9,7 +9,6 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\ReservasiToggleableColumns;
-use Modules\Ticketing\Filament\Clusters\Ticketing\Filters\KategoriPemesananFilter;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Filters\TanggalPemesananFilter;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\ReservasiDokumenResource;
 
@@ -106,7 +105,6 @@ class ReservasiDokumensTable
             ])
             ->filters([
                 TanggalPemesananFilter::make(),
-                KategoriPemesananFilter::make(),
             ])
             ->recordActions([
                 EditAction::make()

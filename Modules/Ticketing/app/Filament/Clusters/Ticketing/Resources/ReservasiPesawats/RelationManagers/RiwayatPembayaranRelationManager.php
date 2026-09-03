@@ -17,7 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Schema as DBSchema;
 use Modules\Ticketing\Models\TicketingPembayar;
 use Modules\Ticketing\Models\TicketingPembayaranPenumpang;
 use Modules\Ticketing\Models\TicketingUnitKerja;
@@ -72,7 +72,7 @@ class RiwayatPembayaranRelationManager extends RelationManager
             Select::make('tckt_pembayar_id')
                 ->label('Nama Pembayar')
                 ->options(function (): array {
-                    if (! Schema::hasTable('ticketing_pembayar')) {
+                    if (! DBSchema::hasTable('ticketing_pembayar')) {
                         return [];
                     }
 
@@ -221,7 +221,7 @@ class RiwayatPembayaranRelationManager extends RelationManager
                             abort(400, 'Belum ada data pembayaran untuk reservasi ini.');
                         }
 
-                        return TicketingPembayaranPenumpang::create([
+                        $payload = [
                             'tckt_penumpang_id' => $data['tckt_penumpang_id'],
                             'tckt_pembayaran_id' => $pembayaran->id,
                             'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
@@ -231,7 +231,18 @@ class RiwayatPembayaranRelationManager extends RelationManager
                             'bukti_pembayaran' => $data['bukti_pembayaran'] ?? null,
                             'status_bukti_bayar' => $data['status_bukti_bayar'] ?? false,
                             'user_id' => auth()->id(),
-                        ]);
+                        ];
+                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                            unset($payload['tckt_pembayar_id']);
+                        }
+                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                            unset($payload['tckt_unit_kerja_id']);
+                        }
+                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
+                            unset($payload['nama_pembayar']);
+                        }
+
+                        return TicketingPembayaranPenumpang::create($payload);
                     }),
             ])
             ->bulkActions([
