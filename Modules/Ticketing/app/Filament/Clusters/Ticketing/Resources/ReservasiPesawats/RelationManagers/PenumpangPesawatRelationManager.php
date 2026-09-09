@@ -108,7 +108,7 @@ class PenumpangPesawatRelationManager extends RelationManager
                             'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
                             'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
                             'jumlah_membayar' => 0,
-                            'user_id' => auth()->id(),
+                            'user_id' => auth()->user()->id(),
                         ];
 
                         if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
