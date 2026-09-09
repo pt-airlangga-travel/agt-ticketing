@@ -46,6 +46,17 @@ class UserForm
                             ->preload()
                             ->native(false)
                             ->required(),
+
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->minLength(8)
+                            ->maxLength(255)
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+
+                        
                     ])->columnspanfull(),
             ]);
     }

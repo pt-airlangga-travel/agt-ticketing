@@ -26,6 +26,9 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use JeffersonGoncalves\Filament\Topbar\TopbarPlugin;
 use MarcoGermani87\FilamentCaptcha\FilamentCaptcha;
+use Modules\PengajuanDana\Filament\PengajuanDanaPlugin;
+use Modules\Ticketing\Filament\TicketingPlugin;
+use Modules\User\Filament\UserPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -57,6 +60,9 @@ class DashboardPanelProvider extends PanelProvider
             ->plugins([
                 FilamentCaptcha::make(),
                 ModulesPlugin::make(),
+                UserPlugin::make(),
+                TicketingPlugin::make(),
+                PengajuanDanaPlugin::make(),
                 // TopbarPlugin::make(),
                 AuthDesignerPlugin::make()
                     ->login(fn (AuthPageConfig $config) => $config
