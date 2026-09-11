@@ -17,4 +17,13 @@ class PengajuanDanaCluster extends Cluster
     protected static ?string $slug = 'pengajuan-dana';
 
     protected static ?int $navigationSort = 3;
+
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+
+        return $user
+            ? ($user->isSuperAdmin() || $user->hasRole('pengajuan-dana'))
+            : false;
+    }
 }

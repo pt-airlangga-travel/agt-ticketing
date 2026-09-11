@@ -34,7 +34,7 @@ class TicketingCluster extends Cluster
     }
 
     /**
-     * Item "Dashboard" yang disematkan di awal sub-navigation cluster.
+     * Item Dashboard pada sub-navigation cluster.
      */
     public static function getDashboardNavigationItem(): NavigationItem
     {
@@ -70,12 +70,25 @@ class TicketingCluster extends Cluster
         return 2;
     }
 
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+
+        return $user
+            ? ($user->isSuperAdmin() || $user->hasRole('ticketing'))
+            : false;
+    }
+
     public function content(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Grid::make($this->getColumns())
-                    ->schema(fn (): array => $this->getWidgetsSchemaComponents($this->getWidgets())),
+                    ->schema(
+                        fn (): array => $this->getWidgetsSchemaComponents(
+                            $this->getWidgets()
+                        )
+                    ),
             ]);
     }
 }

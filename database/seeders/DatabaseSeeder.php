@@ -23,9 +23,11 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
+
         $this->call([
             RolePermissionSeeder::class,
             TicketingDatabaseSeeder::class,
+            RbacTicketingPengajuanSeeder::class,
         ]);
     }
 }

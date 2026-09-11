@@ -116,6 +116,13 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function hasRole(string $roleName): bool
+    {
+    return $this->roles()
+        ->where('roles.name', $roleName)
+        ->exists();
+    }
+
     public function forgetAccessCache(): void
     {
         Cache::forget("user:{$this->id}:permissions");
