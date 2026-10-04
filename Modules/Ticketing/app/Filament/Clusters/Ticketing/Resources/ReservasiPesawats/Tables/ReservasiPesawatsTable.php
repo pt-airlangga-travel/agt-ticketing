@@ -43,7 +43,7 @@ class ReservasiPesawatsTable
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="font-semibold text-gray-950 dark:text-white">{$invoice}</div>
+                                <div class="font-semibold text-gray-800 dark:text-white">{$invoice}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$tanggal}</div>
                             </div>
                         HTML);
@@ -111,7 +111,7 @@ class ReservasiPesawatsTable
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="font-semibold text-gray-950 dark:text-white">{$nama}</div>
+                                <div class="font-semibold text-gray-800 dark:text-white">{$nama}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$kode}</div>
                             </div>
                         HTML);
@@ -128,7 +128,7 @@ class ReservasiPesawatsTable
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="text-gray-950 dark:text-white">{$tanggal}</div>
+                                <div class="text-gray-800 dark:text-white">{$tanggal}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$jam} {$zona}</div>
                             </div>
                         HTML);
@@ -144,7 +144,7 @@ class ReservasiPesawatsTable
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="font-semibold text-gray-950 dark:text-white">{$nama}</div>
+                                <div class="font-semibold text-gray-800 dark:text-white">{$nama}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$kode}</div>
                             </div>
                         HTML);
@@ -161,7 +161,7 @@ class ReservasiPesawatsTable
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="text-gray-950 dark:text-white">{$tanggal}</div>
+                                <div class="text-gray-800 dark:text-white">{$tanggal}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$jam} {$zona}</div>
                             </div>
                         HTML);

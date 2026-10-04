@@ -83,17 +83,17 @@ class TicketingActivityLogsTable
                 $new = self::formatValue($field, $change['new']);
 
                 $html .= '<div class="leading-tight">';
-                $html .= '<span class="font-semibold text-gray-950 dark:text-white">'.e($label).'</span>';
+                $html .= '<span class="font-semibold text-gray-800 dark:text-white">'.e($label).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400">: </span>';
                 $html .= '<span class="line-through text-gray-400 dark:text-gray-500">'.e($old).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400"> → </span>';
-                $html .= '<span class="text-gray-950 dark:text-white">'.e($new).'</span>';
+                $html .= '<span class="text-gray-800 dark:text-white">'.e($new).'</span>';
                 $html .= '</div>';
             } else {
                 $html .= '<div class="leading-tight">';
-                $html .= '<span class="font-semibold text-gray-950 dark:text-white">'.e($label).'</span>';
+                $html .= '<span class="font-semibold text-gray-800 dark:text-white">'.e($label).'</span>';
                 $html .= '<span class="text-gray-500 dark:text-gray-400">: </span>';
-                $html .= '<span class="text-gray-950 dark:text-white">'.e(self::formatValue($field, $change)).'</span>';
+                $html .= '<span class="text-gray-800 dark:text-white">'.e(self::formatValue($field, $change)).'</span>';
                 $html .= '</div>';
             }
         }
