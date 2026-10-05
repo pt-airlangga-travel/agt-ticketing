@@ -62,7 +62,7 @@ class DashboardPanelProvider extends PanelProvider
                 ModulesPlugin::make(),
                 UserPlugin::make(),
                 TicketingPlugin::make(),
-                PengajuanDanaPlugin::make(),
+                // PengajuanDanaPlugin::make(),
                 // TopbarPlugin::make(),
                 AuthDesignerPlugin::make()
                     ->login(fn (AuthPageConfig $config) => $config
