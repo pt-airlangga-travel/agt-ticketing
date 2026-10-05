@@ -17,6 +17,8 @@ class PemilikDokumenRelationManager extends RelationManager
 {
     use HasPrintInvoiceBulkAction;
 
+    protected static bool $shouldSkipAuthorization = true;
+
     protected static string $relationship = 'ticketingPenumpang';
 
     protected static ?string $title = 'Daftar Pemilik Dokumen';

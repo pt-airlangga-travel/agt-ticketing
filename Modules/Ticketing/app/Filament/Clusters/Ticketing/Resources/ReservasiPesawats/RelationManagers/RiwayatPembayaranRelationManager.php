@@ -24,6 +24,8 @@ use Modules\Ticketing\Models\TicketingUnitKerja;
 
 class RiwayatPembayaranRelationManager extends RelationManager
 {
+    protected static bool $shouldSkipAuthorization = true;
+
     protected static string $relationship = 'ticketingPembayaranPenumpang';
 
     protected static ?string $title = 'Riwayat Pembayaran';

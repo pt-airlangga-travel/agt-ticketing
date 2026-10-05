@@ -23,7 +23,9 @@ class PenumpangPesawatRelationManager extends RelationManager
 {
     use HasPrintInvoiceBulkAction;
 
-    protected static string $relationship = 'ticketingPembayaranPenumpang';
+    protected static bool $shouldSkipAuthorization = true;
+
+    protected static string $relationship = 'ticketingPenumpang';
 
     protected static ?string $title = 'Daftar Penumpang';
 
@@ -68,19 +70,28 @@ class PenumpangPesawatRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('ticketingPenumpang.nama_penumpang')
+                TextColumn::make('nama_penumpang')
                     ->label('Nama')
                     ->searchable(),
 
-                TextColumn::make('ticketingPenumpang.jenis_kelamin')
+                TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->formatStateUsing(fn ($state): string => (int) $state ? 'Perempuan' : 'Laki-laki'),
 
-                TextColumn::make('ticketingPembayar.nama_pembayar')
-                    ->label('Pembayar'),
+                TextColumn::make('pembayar')
+                    ->label('Pembayar')
+                    ->state(function (Model $record) {
+                        $pembayaran = $record->ticketingPembayaranPenumpang->first();
+                        return $pembayaran?->ticketingPembayar?->nama_pembayar
+                            ?? $pembayaran?->nama_pembayar
+                            ?? '-';
+                    }),
 
-                TextColumn::make('ticketingUnitKerja.nama_unit_kerja')
-                    ->label('Unit Kerja'),
+                TextColumn::make('unit_kerja')
+                    ->label('Unit Kerja')
+                    ->state(function (Model $record) {
+                        return $record->ticketingPembayaranPenumpang->first()?->ticketingUnitKerja?->nama_unit_kerja ?? '-';
+                    }),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -91,10 +102,6 @@ class PenumpangPesawatRelationManager extends RelationManager
                     ->using(function (array $data): Model {
                         $pembayaran = $this->getOwnerRecord()?->ticketingPemesanan?->ticketingPembayaran;
 
-                        if (! $pembayaran) {
-                            abort(400, 'Belum ada data pembayaran untuk reservasi ini.');
-                        }
-
                         $penumpang = TicketingPenumpang::create([
                             'nama_penumpang' => $data['nama_penumpang'],
                             'jenis_kelamin' => $data['jenis_kelamin'],
@@ -102,61 +109,95 @@ class PenumpangPesawatRelationManager extends RelationManager
 
                         $this->getOwnerRecord()->ticketingPenumpang()->attach($penumpang);
 
-                        $payload = [
-                            'tckt_penumpang_id' => $penumpang->id,
-                            'tckt_pembayaran_id' => $pembayaran->id,
-                            'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
-                            'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
-                            'jumlah_membayar' => 0,
-                            'user_id' => auth()->user()->id(),
-                        ];
+                        if ($pembayaran) {
+                            $payload = [
+                                'tckt_penumpang_id' => $penumpang->id,
+                                'tckt_pembayaran_id' => $pembayaran->id,
+                                'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
+                                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
+                                'jumlah_membayar' => 0,
+                                'user_id' => auth()->id(),
+                            ];
 
-                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
-                            unset($payload['tckt_pembayar_id']);
-                        }
-                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
-                            unset($payload['tckt_unit_kerja_id']);
-                        }
-                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
-                            unset($payload['nama_pembayar']);
+                            if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                                unset($payload['tckt_pembayar_id']);
+                            }
+                            if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                                unset($payload['tckt_unit_kerja_id']);
+                            }
+                            if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
+                                unset($payload['nama_pembayar']);
+                            }
+
+                            TicketingPembayaranPenumpang::create($payload);
                         }
 
-                        return TicketingPembayaranPenumpang::create($payload);
+                        return $penumpang;
                     }),
             ])
             ->bulkActions([
-                $this->printInvoiceBulkAction('print-invoice-pesawat', 'tckt_penumpang_id'),
+                $this->printInvoiceBulkAction('print-invoice-pesawat', 'id'),
             ])
             ->actions([
                 EditAction::make()
                     ->button()
                     ->hiddenLabel()
                     ->mutateRecordDataUsing(function (array $data, Model $record): array {
-                        $data['nama_penumpang'] = $record->ticketingPenumpang?->nama_penumpang;
-                        $data['jenis_kelamin'] = $record->ticketingPenumpang?->jenis_kelamin;
-                        $data['tckt_pembayar_id'] = $record->tckt_pembayar_id;
-                        $data['unit_kerja_pembayar'] = $record->tckt_unit_kerja_id;
+                        $pembayaranPenumpang = $record->ticketingPembayaranPenumpang->first();
+                        
+                        $data['nama_penumpang'] = $record->nama_penumpang;
+                        $data['jenis_kelamin'] = $record->jenis_kelamin;
+                        $data['tckt_pembayar_id'] = $pembayaranPenumpang?->tckt_pembayar_id;
+                        $data['unit_kerja_pembayar'] = $pembayaranPenumpang?->tckt_unit_kerja_id;
 
                         return $data;
                     })
                     ->using(function (Model $record, array $data): Model {
-                        $record->ticketingPenumpang?->update([
+                        $record->update([
                             'nama_penumpang' => $data['nama_penumpang'],
                             'jenis_kelamin' => $data['jenis_kelamin'],
                         ]);
 
-                        $payload = [
-                            'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
-                            'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
-                        ];
-                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
-                            unset($payload['tckt_pembayar_id']);
-                        }
-                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
-                            unset($payload['tckt_unit_kerja_id']);
-                        }
+                        $pembayaranPenumpang = $record->ticketingPembayaranPenumpang->first();
 
-                        $record->update($payload);
+                        if ($pembayaranPenumpang) {
+                            $payload = [
+                                'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
+                                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
+                            ];
+                            if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                                unset($payload['tckt_pembayar_id']);
+                            }
+                            if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                                unset($payload['tckt_unit_kerja_id']);
+                            }
+
+                            $pembayaranPenumpang->update($payload);
+                        } else {
+                            $pembayaran = $this->getOwnerRecord()?->ticketingPemesanan?->ticketingPembayaran;
+                            if ($pembayaran) {
+                                $payload = [
+                                    'tckt_penumpang_id' => $record->id,
+                                    'tckt_pembayaran_id' => $pembayaran->id,
+                                    'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
+                                    'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
+                                    'jumlah_membayar' => 0,
+                                    'user_id' => auth()->id(),
+                                ];
+
+                                if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                                    unset($payload['tckt_pembayar_id']);
+                                }
+                                if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                                    unset($payload['tckt_unit_kerja_id']);
+                                }
+                                if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
+                                    unset($payload['nama_pembayar']);
+                                }
+
+                                TicketingPembayaranPenumpang::create($payload);
+                            }
+                        }
 
                         return $record;
                     }),
@@ -165,7 +206,8 @@ class PenumpangPesawatRelationManager extends RelationManager
                     ->button()
                     ->hiddenLabel()
                     ->using(function (Model $record): void {
-                        $this->getOwnerRecord()->ticketingPenumpang()->detach($record->tckt_penumpang_id);
+                        $this->getOwnerRecord()->ticketingPenumpang()->detach($record->id);
+                        $record->ticketingPembayaranPenumpang()->delete();
                         $record->delete();
                     }),
             ]);
