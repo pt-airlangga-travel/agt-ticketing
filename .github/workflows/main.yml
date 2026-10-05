@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd /home/u122950122/domains/airlanggatravel.com/inticket
+            cd /home/u122950122/domains/airlanggatravel.com/public_html/inticket
             git pull origin main
             
             # Example backend commands:
