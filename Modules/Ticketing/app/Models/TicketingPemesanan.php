@@ -90,6 +90,18 @@ class TicketingPemesanan extends Model
         return $this->hasOne(TicketingPembayaran::class, 'tckt_pemesanan_id');
     }
 
+    public function ticketingPembayaranPenumpang()
+    {
+        return $this->hasManyThrough(
+            TicketingPembayaranPenumpang::class,
+            TicketingPembayaran::class,
+            'tckt_pemesanan_id',
+            'tckt_pembayaran_id',
+            'id',
+            'id'
+        );
+    }
+
     public function ticketingPenumpang()
     {
         if ($this->ticketingTiketPesawat) {
