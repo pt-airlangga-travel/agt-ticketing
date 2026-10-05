@@ -13,6 +13,7 @@ use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\Pag
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\Pages\EditReservasiKereta;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\Pages\ListReservasiKeretas;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\RelationManagers\PenumpangKeretaRelationManager;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\RelationManagers\RiwayatPembayaranRelationManager;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\Schemas\ReservasiKeretaForm;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\Tables\ReservasiKeretasTable;
 use Modules\Ticketing\Filament\Clusters\Ticketing\TicketingCluster;
@@ -136,6 +137,7 @@ class ReservasiKeretaResource extends Resource
     {
         return [
             PenumpangKeretaRelationManager::class,
+            RiwayatPembayaranRelationManager::class,
         ];
     }
 

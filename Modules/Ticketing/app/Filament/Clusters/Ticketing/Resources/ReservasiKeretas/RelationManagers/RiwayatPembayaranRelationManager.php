@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiPesawats\RelationManagers;
+namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\RelationManagers;
 
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
@@ -309,3 +309,4 @@ class RiwayatPembayaranRelationManager extends RelationManager
         return $this->terbayarPerPenumpangCache;
     }
 }
+

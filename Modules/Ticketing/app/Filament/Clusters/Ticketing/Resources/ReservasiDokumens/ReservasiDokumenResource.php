@@ -13,6 +13,7 @@ use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pa
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pages\EditReservasiDokumen;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pages\ListReservasiDokumens;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\RelationManagers\PemilikDokumenRelationManager;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\RelationManagers\RiwayatPembayaranRelationManager;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Schemas\ReservasiDokumenForm;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Tables\ReservasiDokumensTable;
 use Modules\Ticketing\Filament\Clusters\Ticketing\TicketingCluster;
@@ -93,6 +94,7 @@ class ReservasiDokumenResource extends Resource
     {
         return [
             PemilikDokumenRelationManager::class,
+            RiwayatPembayaranRelationManager::class,
         ];
     }
 

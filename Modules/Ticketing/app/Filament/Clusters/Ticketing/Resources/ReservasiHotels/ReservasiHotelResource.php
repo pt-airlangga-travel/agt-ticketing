@@ -13,6 +13,7 @@ use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\Page
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\Pages\EditReservasiHotel;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\Pages\ListReservasiHotels;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\RelationManagers\PenumpangHotelRelationManager;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\RelationManagers\RiwayatPembayaranRelationManager;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\Schemas\ReservasiHotelForm;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\Tables\ReservasiHotelsTable;
 use Modules\Ticketing\Filament\Clusters\Ticketing\TicketingCluster;
@@ -127,6 +128,7 @@ class ReservasiHotelResource extends Resource
     {
         return [
             PenumpangHotelRelationManager::class,
+            RiwayatPembayaranRelationManager::class,
         ];
     }
 
