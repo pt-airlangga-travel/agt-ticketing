@@ -2,8 +2,10 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiHotels\RelationManagers;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
+use Modules\Ticketing\Models\TicketingPenumpang;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -51,8 +53,35 @@ class PenumpangHotelRelationManager extends RelationManager
                     ->formatStateUsing(fn (int $state): string => $state ? 'Perempuan' : 'Laki-laki'),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->label('Tambah Penumpang'),
+                Action::make('tambah_penumpang')
+                    ->label('Tambah Penumpang')
+                    ->form([
+                        Select::make('penumpang_id')
+                            ->label('Nama Penumpang')
+                            ->options(fn () => TicketingPenumpang::query()->pluck('nama_penumpang', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('nama_penumpang')
+                                    ->label('Nama')
+                                    ->required()
+                                    ->maxLength(255),
+                                Select::make('jenis_kelamin')
+                                    ->label('Jenis Kelamin')
+                                    ->options([0 => 'Laki-laki', 1 => 'Perempuan'])
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function (array $data) {
+                                return TicketingPenumpang::create([
+                                    'nama_penumpang' => $data['nama_penumpang'],
+                                    'jenis_kelamin' => $data['jenis_kelamin'],
+                                ])->id;
+                            })
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $livewire->getOwnerRecord()->ticketingPenumpang()->syncWithoutDetaching([$data['penumpang_id']]);
+                    }),
             ])
             ->bulkActions([
                 $this->printInvoiceBulkAction('print-invoice-hotel'),

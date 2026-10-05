@@ -1,5 +1,5 @@
 {
     "User": true,
     "Ticketing": true,
-    "PengajuanDana": true
+    "PengajuanDana": false
 }

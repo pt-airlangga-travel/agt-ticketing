@@ -2,6 +2,7 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiPesawats\RelationManagers;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -94,24 +95,63 @@ class PenumpangPesawatRelationManager extends RelationManager
                     }),
             ])
             ->headerActions([
-                CreateAction::make()
+                Action::make('tambah_penumpang')
                     ->label('Tambah Penumpang')
-                    ->mutateFormDataUsing(function (array $data): array {
-                        return $data;
-                    })
-                    ->using(function (array $data): Model {
-                        $pembayaran = $this->getOwnerRecord()?->ticketingPemesanan?->ticketingPembayaran;
+                    ->form([
+                        Select::make('penumpang_id')
+                            ->label('Nama Penumpang')
+                            ->options(fn () => TicketingPenumpang::query()->pluck('nama_penumpang', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('nama_penumpang')
+                                    ->label('Nama')
+                                    ->required()
+                                    ->maxLength(255),
+                                Select::make('jenis_kelamin')
+                                    ->label('Jenis Kelamin')
+                                    ->options([0 => 'Laki-laki', 1 => 'Perempuan'])
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(function (array $data) {
+                                return TicketingPenumpang::create([
+                                    'nama_penumpang' => $data['nama_penumpang'],
+                                    'jenis_kelamin' => $data['jenis_kelamin'],
+                                ])->id;
+                            })
+                            ->required(),
 
-                        $penumpang = TicketingPenumpang::create([
-                            'nama_penumpang' => $data['nama_penumpang'],
-                            'jenis_kelamin' => $data['jenis_kelamin'],
-                        ]);
+                        Select::make('tckt_pembayar_id')
+                            ->label('Nama Pembayar')
+                            ->options(function (): array {
+                                if (! DBSchema::hasTable('ticketing_pembayar')) {
+                                    return [];
+                                }
 
-                        $this->getOwnerRecord()->ticketingPenumpang()->attach($penumpang);
+                                return TicketingPembayar::query()
+                                    ->pluck('nama_pembayar', 'id')
+                                    ->all();
+                            })
+                            ->searchable()
+                            ->preload(),
+
+                        Select::make('unit_kerja_pembayar')
+                            ->label('Unit Kerja Pembayar')
+                            ->options(fn () => TicketingUnitKerja::query()
+                                ->where('is_active', true)
+                                ->pluck('nama_unit_kerja', 'id'))
+                            ->searchable()
+                            ->preload(),
+                    ])
+                    ->action(function (array $data, $livewire) {
+                        $pembayaran = $livewire->getOwnerRecord()?->ticketingPemesanan?->ticketingPembayaran;
+                        $penumpangId = $data['penumpang_id'];
+
+                        $livewire->getOwnerRecord()->ticketingPenumpang()->syncWithoutDetaching([$penumpangId]);
 
                         if ($pembayaran) {
                             $payload = [
-                                'tckt_penumpang_id' => $penumpang->id,
+                                'tckt_penumpang_id' => $penumpangId,
                                 'tckt_pembayaran_id' => $pembayaran->id,
                                 'tckt_pembayar_id' => $data['tckt_pembayar_id'] ?? null,
                                 'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
@@ -131,8 +171,6 @@ class PenumpangPesawatRelationManager extends RelationManager
 
                             TicketingPembayaranPenumpang::create($payload);
                         }
-
-                        return $penumpang;
                     }),
             ])
             ->bulkActions([
