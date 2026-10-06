@@ -56,6 +56,17 @@ class ReservasiHotelsTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
 
+                TextColumn::make('penumpang_id')
+                    ->label('Penumpang ID')
+                    ->state(function ($record) {
+                        $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
+                        return collect($record->ticketingPenumpang)->map(function ($p, $index) use ($invoice) {
+                            return $invoice . '-' . ($index + 1);
+                        })->all();
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
+
                 TextColumn::make('ticketingPenumpang.nama_penumpang')
                     ->label('Penumpang')
                     ->badge()

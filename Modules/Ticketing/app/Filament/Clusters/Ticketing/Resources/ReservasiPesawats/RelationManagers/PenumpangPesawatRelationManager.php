@@ -71,6 +71,16 @@ class PenumpangPesawatRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                TextColumn::make('penumpang_id')
+                    ->label('Penumpang ID')
+                    ->state(function (Model $record, $livewire) {
+                        $owner = $livewire->getOwnerRecord();
+                        $invoice = $owner?->ticketingPemesanan?->invoice ?? $owner?->invoice ?? '-';
+                        $index = $owner?->ticketingPenumpang?->search(fn($r) => $r->id === $record->id);
+                        return $index !== false ? $invoice . '-' . ($index + 1) : '-';
+                    })
+                    ->searchable(false),
+
                 TextColumn::make('nama_penumpang')
                     ->label('Nama')
                     ->searchable(),
