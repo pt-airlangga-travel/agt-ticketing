@@ -85,13 +85,16 @@ trait ListsReservasiByEntity
                     $penumpangs = [null];
                 }
 
-                foreach ($penumpangs as $penumpang) {
+                foreach ($penumpangs as $index => $penumpang) {
                     $row = [];
 
                     foreach ($columns as $column) {
                         $name = $column->getName();
 
-                        if ($name === 'ticketingPenumpang.nama_penumpang' || $name === 'penumpang') {
+                        if ($name === 'penumpang_id') {
+                            $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
+                            $value = $penumpang ? $invoice . '-' . ($index + 1) : '';
+                        } elseif ($name === 'ticketingPenumpang.nama_penumpang' || $name === 'penumpang') {
                             $value = $penumpang?->nama_penumpang;
                         } elseif ($name === 'pembayar_per_penumpang' || $name === 'penumpang_pembayar') {
                             $pembayaranId = $record->ticketingPemesanan?->ticketingPembayaran?->id;

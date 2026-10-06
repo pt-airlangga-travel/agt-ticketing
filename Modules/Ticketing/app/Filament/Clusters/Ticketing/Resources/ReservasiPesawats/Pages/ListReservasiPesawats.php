@@ -89,14 +89,17 @@ class ListReservasiPesawats extends ListRecords
                     $penumpangs = [null];
                 }
 
-                foreach ($penumpangs as $penumpang) {
+                foreach ($penumpangs as $index => $penumpang) {
                     $row = [];
 
                     foreach ($columns as $column) {
                         $name = $column->getName();
                         $value = null;
 
-                        if ($name === 'ticketingPenumpang.nama_penumpang') {
+                        if ($name === 'penumpang_id') {
+                            $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
+                            $value = $penumpang ? $invoice . '-' . ($index + 1) : '';
+                        } elseif ($name === 'ticketingPenumpang.nama_penumpang') {
                             $value = $penumpang?->nama_penumpang;
                         } elseif ($name === 'pembayar_per_penumpang') {
                             $pembayaranId = $record->ticketingPemesanan?->ticketingPembayaran?->id;
