@@ -64,7 +64,7 @@ class ReservasiPesawatsTable
                     ->toggleable(),
 
                 TextColumn::make('penumpang_id')
-                    ->label('Penumpang ID')
+                    ->label('Penumpang ID edit')
                     ->state(function ($record) {
                         $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
                         return collect($record->ticketingPenumpang)->map(function ($p, $index) use ($invoice) {
