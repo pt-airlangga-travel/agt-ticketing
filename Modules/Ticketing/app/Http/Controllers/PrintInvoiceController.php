@@ -30,7 +30,7 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->ticketingPembayaran?->id);
 
-        $hargaSatuan = $this->hargaSatuan($pemesanan->harga_jual, $tiket->ticketingPenumpang->count());
+        $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
 
         $rutePulang = $nomerPenerbanganPulang = $kodeBookingPulang = $jadwalBerangkatPulang = '';
@@ -81,7 +81,7 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang));
 
-        $hargaSatuan = $this->hargaSatuan($pemesanan->harga_jual, $tiket->ticketingPenumpang->count());
+        $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
 
         return $this->streamInvoice('kereta', $pemesanan, [
@@ -112,7 +112,7 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($kamarHotel->ticketingPenumpang, explode(',', $request->id_penumpang));
 
-        $hargaSatuan = $this->hargaSatuan($pemesanan->harga_jual, $kamarHotel->ticketingPenumpang->count());
+        $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
 
         return $this->streamInvoice('hotel', $pemesanan, [
@@ -144,7 +144,7 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($dokumen->ticketingPenumpang, explode(',', $request->id_penumpang));
 
-        $hargaSatuan = $this->hargaSatuan($pemesanan->harga_jual, $dokumen->ticketingPenumpang->count());
+        $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
 
         return $this->streamInvoice('dokumen', $pemesanan, [
@@ -190,10 +190,7 @@ class PrintInvoiceController extends Controller
         return $hasil;
     }
 
-    protected function hargaSatuan(int $hargaJual, int $jumlahPenumpang): int
-    {
-        return $jumlahPenumpang > 0 ? (int) round($hargaJual / $jumlahPenumpang) : 0;
-    }
+
 
     protected function streamInvoice(string $view, TicketingPemesanan $pemesanan, array $data, int $hargaSatuan, int $hargaTotal, array $penumpangTerpilih)
     {

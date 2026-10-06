@@ -301,10 +301,10 @@
                                 <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat_pulang)) }}</span>
                             @endif
                         </td>
-                        <td class="" rowspan="{{ count($penumpangs) }}">
-                            <span>Rp.{{ number_format($harga_total, 0, ',', '.') }}</span>
-                        </td>
                     @endif
+                    <td class="">
+                        <span>Rp.{{ number_format($harga_satuan, 0, ',', '.') }}</span>
+                    </td>
                 </tr>
             @endforeach
             <tr style="width: 100%">
