@@ -260,11 +260,9 @@
             </tr>
             @foreach ($penumpangs as $index => $penumpang)
                 <tr>
-                    @if ($loop->first)
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center; font-weight: 400">
-                            <span>{{ $loop->iteration }}</span>
-                        </td>
-                    @endif
+                    <td class="" style="text-align: center; font-weight: 400">
+                        <span>{{ $loop->iteration }}</span>
+                    </td>
                     <td class="" style="text-align: center;">
                         <span>{{ $penumpang['penumpang_id'] }}</span>
                     </td>
