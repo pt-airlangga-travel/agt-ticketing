@@ -242,11 +242,11 @@
                 <td class="" style="text-align: center">
                     Reservation
                 </td>
-                <td class="" style="text-align: center; width: 15%">
-                    Pasengger
-                </td>
                 <td class="" style="text-align: center; width: 10%;">
                     Penumpang ID
+                </td>
+                <td class="" style="text-align: center; width: 15%">
+                    Pasengger
                 </td>
                 <td class="" style="text-align: center; width: 15%">
                     Code
@@ -265,11 +265,11 @@
                     <td class="">
                         <span>{{ $tanggal_pemesanan }}</span>
                     </td>
-                    <td class="">
-                        <span>{{ $penumpang['nama'] }}</span>
-                    </td>
                     <td class="" style="text-align: center;">
                         <span>{{ $penumpang['penumpang_id'] }}</span>
+                    </td>
+                    <td class="">
+                        <span>{{ $penumpang['nama'] }}</span>
                     </td>
                     <td class="">
                         <span>{{ $kode_booking }}</span>

@@ -237,11 +237,11 @@
         <tbody style="font-weight: normal; padding: 0px;">
             <tr style="font-weight: 700;">
                 <td class=""></td>
-                <td class="" style="text-align: center; width: 15%;">
-                    Pasengger
-                </td>
                 <td class="" style="text-align: center; width: 10%;">
                     Penumpang ID
+                </td>
+                <td class="" style="text-align: center; width: 15%;">
+                    Pasengger
                 </td>
                 <td class="" style="text-align: center; width: 20%;">
                     Pembayar
@@ -265,11 +265,11 @@
                             <span>{{ $loop->iteration }}</span>
                         </td>
                     @endif
-                    <td class="">
-                        <span>{{ $penumpang['nama'] }}</span>
-                    </td>
                     <td class="" style="text-align: center;">
                         <span>{{ $penumpang['penumpang_id'] }}</span>
+                    </td>
+                    <td class="">
+                        <span>{{ $penumpang['nama'] }}</span>
                     </td>
                     <td class="">
                         <span>{{ $penumpang['pembayar'] }}</span>

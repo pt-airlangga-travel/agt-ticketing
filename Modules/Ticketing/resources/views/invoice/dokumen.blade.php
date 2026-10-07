@@ -246,11 +246,11 @@
                 <td class="" style="text-align: center">
                     Reservation
                 </td>
-                <td class="" style="text-align: center; width: 15%">
-                    Pasengger
-                </td>
                 <td class="" style="text-align: center; width: 10%;">
                     Penumpang ID
+                </td>
+                <td class="" style="text-align: center; width: 15%">
+                    Pasengger
                 </td>
                 <td class="" style="text-align: center; width: 15%">
                     Jenis Dokumen
@@ -270,10 +270,10 @@
                         <span>{{ $tanggal_pemesanan }}</span>
                     </td>
                     <td class="" style="padding: 0px; text-align: center;">
-                        <span>{{ $penumpang['nama'] }}</span>
+                        <span>{{ $penumpang['penumpang_id'] }}</span>
                     </td>
                     <td class="" style="padding: 0px; text-align: center;">
-                        <span>{{ $penumpang['penumpang_id'] }}</span>
+                        <span>{{ $penumpang['nama'] }}</span>
                     </td>
                     <td class="" style="padding: 0px; text-align: center;">
                         <span>{{ $jenis_dokumen }}</span>

@@ -242,11 +242,11 @@
                 <td class="" style="text-align: center">
                     Reservation
                 </td>
-                <td class="" style="text-align: center; width: 15%">
-                    Guest
-                </td>
                 <td class="" style="text-align: center; width: 10%;">
                     Penumpang ID
+                </td>
+                <td class="" style="text-align: center; width: 15%">
+                    Guest
                 </td>
                 <td class="" style="text-align: center; width: 15%">
                     Hotel's Name
@@ -268,11 +268,11 @@
                     <td class="" style="padding: 0px; text-align: center;">
                         <span>{{ $tanggal_pemesanan }}</span>
                     </td>
-                    <td class="" style="padding: 0px;">
-                        <span>{{ $penumpang['nama'] }}</span>
-                    </td>
                     <td class="" style="padding: 0px; text-align: center;">
                         <span>{{ $penumpang['penumpang_id'] }}</span>
+                    </td>
+                    <td class="" style="padding: 0px;">
+                        <span>{{ $penumpang['nama'] }}</span>
                     </td>
                     <td class="" style="padding: 0px;font-size:12px">
                         <span>{{ $nama_hotel }}</span>
