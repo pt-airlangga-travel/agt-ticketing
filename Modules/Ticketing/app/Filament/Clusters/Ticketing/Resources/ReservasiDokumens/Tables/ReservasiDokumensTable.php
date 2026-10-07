@@ -58,7 +58,7 @@ class ReservasiDokumensTable
                     ->label('Penumpang ID')
                     ->state(function ($record) {
                         $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
-                        return collect($record->ticketingPenumpang)->map(function ($p, $index) use ($invoice) {
+                        return collect($record->ticketingPenumpang)->values()->map(function ($p, $index) use ($invoice) {
                             return $invoice . '-' . ($index + 1);
                         })->all();
                     })

@@ -163,8 +163,10 @@ class PrintInvoiceController extends Controller
         ]);
 
         $originalIndexMap = [];
-        foreach ($penumpangs as $index => $p) {
-            $originalIndexMap[$p->id] = $index;
+        $i = 0;
+        foreach ($penumpangs as $p) {
+            $originalIndexMap[$p->id] = $i;
+            $i++;
         }
 
         foreach ($idTerpilih as $id) {
