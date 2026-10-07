@@ -228,7 +228,7 @@
                 <th class="" style="text-align: center; font-weight: 700; width: 10%">
                     DATE
                 </th>
-                <th class="" colspan="6" style="text-align: center; font-weight: 700">
+                <th class="" colspan="7" style="text-align: center; font-weight: 700">
                     DESCRIPTION
                 </th>
                 <th class="" style="text-align: center; font-weight: 700; width: 10%">
@@ -244,6 +244,9 @@
                 </td>
                 <td class="" style="text-align: center; width: 15%">
                     Guest
+                </td>
+                <td class="" style="text-align: center; width: 10%;">
+                    Penumpang ID
                 </td>
                 <td class="" style="text-align: center; width: 15%">
                     Hotel's Name
@@ -267,8 +270,9 @@
                     </td>
                     <td class="" style="padding: 0px;">
                         <span>{{ $penumpang['nama'] }}</span>
-                        <br>
-                        <span style="font-size: 8px; font-weight: 700;">{{ $penumpang['penumpang_id'] }}</span>
+                    </td>
+                    <td class="" style="padding: 0px; text-align: center;">
+                        <span>{{ $penumpang['penumpang_id'] }}</span>
                     </td>
                     <td class="" style="padding: 0px;font-size:12px">
                         <span>{{ $nama_hotel }}</span>
@@ -288,13 +292,13 @@
                 </tr>
             @endforeach
             <tr style="width: 100%; font-weight: 700;">
-                <td id="total" class="" colspan="8" style="text-align: right">
+                <td id="total" class="" colspan="9" style="text-align: right">
                     TOTAL IDR
                 </td>
                 <td class="">Rp.{{ number_format($harga_total, 0, ',', '.') }}</td>
             </tr>
             <tr style="width: 100%; font-weight: 700;">
-                <td id="tagihan" class="" colspan="8"
+                <td id="tagihan" class="" colspan="9"
                     style="text-align: right; font-family: 'Roboto', sans-serif;">
                     Ditagihkan
                 </td>
