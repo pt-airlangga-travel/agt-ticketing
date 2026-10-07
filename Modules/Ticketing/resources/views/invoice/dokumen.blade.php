@@ -268,6 +268,8 @@
                     </td>
                     <td class="" style="padding: 0px; text-align: center;">
                         <span>{{ $penumpang['nama'] }}</span>
+                        <br>
+                        <span style="font-size: 8px; font-weight: 700;">{{ $penumpang['penumpang_id'] }}</span>
                     </td>
                     <td class="" style="padding: 0px; text-align: center;">
                         <span>{{ $jenis_dokumen }}</span>

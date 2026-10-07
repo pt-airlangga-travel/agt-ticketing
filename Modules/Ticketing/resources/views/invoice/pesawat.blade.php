@@ -264,6 +264,8 @@
                     @endif
                     <td class="">
                         <span>{{ $penumpang['nama'] }}</span>
+                        <br>
+                        <span style="font-size: 8px; font-weight: 700;">{{ $penumpang['penumpang_id'] }}</span>
                     </td>
                     <td class="">
                         <span>{{ $penumpang['pembayar'] }}</span>

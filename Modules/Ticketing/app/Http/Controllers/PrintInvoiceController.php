@@ -28,7 +28,7 @@ class PrintInvoiceController extends Controller
             return abort(404);
         }
 
-        $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->ticketingPembayaran?->id);
+        $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice, $pemesanan->ticketingPembayaran?->id);
 
         $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
@@ -79,7 +79,7 @@ class PrintInvoiceController extends Controller
             return abort(404);
         }
 
-        $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang));
+        $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
         $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
@@ -110,7 +110,7 @@ class PrintInvoiceController extends Controller
             return abort(404);
         }
 
-        $penumpangTerpilih = $this->resolusiPenumpang($kamarHotel->ticketingPenumpang, explode(',', $request->id_penumpang));
+        $penumpangTerpilih = $this->resolusiPenumpang($kamarHotel->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
         $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
@@ -142,7 +142,7 @@ class PrintInvoiceController extends Controller
             return abort(404);
         }
 
-        $penumpangTerpilih = $this->resolusiPenumpang($dokumen->ticketingPenumpang, explode(',', $request->id_penumpang));
+        $penumpangTerpilih = $this->resolusiPenumpang($dokumen->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
         $hargaSatuan = $pemesanan->harga_jual;
         $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
@@ -153,7 +153,7 @@ class PrintInvoiceController extends Controller
         ], $hargaSatuan, $hargaTotal, $penumpangTerpilih);
     }
 
-    protected function resolusiPenumpang($penumpangs, array $idTerpilih, ?int $idPembayaran = null): array
+    protected function resolusiPenumpang($penumpangs, array $idTerpilih, string $invoice, ?int $idPembayaran = null): array
     {
         $hasil = [];
 
@@ -161,6 +161,11 @@ class PrintInvoiceController extends Controller
             'ticketingPembayaranPenumpang.ticketingPembayar',
             'ticketingPembayaranPenumpang.ticketingUnitKerja',
         ]);
+
+        $originalIndexMap = [];
+        foreach ($penumpangs as $index => $p) {
+            $originalIndexMap[$p->id] = $index;
+        }
 
         foreach ($idTerpilih as $id) {
             foreach ($penumpangs as $penumpang) {
@@ -182,6 +187,7 @@ class PrintInvoiceController extends Controller
                         'nama' => $nama,
                         'pembayar' => $namaPembayar ?? '',
                         'unit_kerja_pembayar' => $unitKerjaPembayar ?? '',
+                        'penumpang_id' => $invoice . '-' . ($originalIndexMap[$penumpang->id] + 1),
                     ];
                 }
             }
