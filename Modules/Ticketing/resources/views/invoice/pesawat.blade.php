@@ -143,14 +143,7 @@
 
 <body>
 
-    
-
-    <table class="tg"
-        style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
-        <thead>
-            <tr style="border: none !important;">
-                <th colspan="10" style="border: none !important; border-width: 0px !important; padding: 0; text-align: left; font-weight: normal; margin: 0; padding-bottom: 15px;">
-                    <div class="logo-container" style="position: relative">
+    <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -220,9 +213,10 @@
             <td colspan="2"></td>
         </tr>
     </table>
-                </th>
-            </tr>
-            
+
+    <table class="tg"
+        style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
+        <thead>
             <tr style="width: 100%">
                 <th class=""
                     style="
@@ -282,42 +276,36 @@
                             <span>{{ $penumpang['unit_kerja_pembayar'] }}</span>
                         @endif
                     </td>
-                        <td class="" style="text-align: center; vertical-align: top;">
-                            @if ($loop->first)
-                                <span>{{ $nomer_penerbangan }}</span>
-                                @if ($pulang_pergi == 1)
-                                    <br>
-                                    <span>{{ $nomer_penerbangan_pulang }}</span>
-                                @endif
+                    @if ($loop->first)
+                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                            <span>{{ $nomer_penerbangan }}</span>
+                            @if ($pulang_pergi == 1)
+                                <br>
+                                <span>{{ $nomer_penerbangan_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" style="text-align: center; vertical-align: top;">
-                            @if ($loop->first)
-                                <span>{{ $kode_booking }}</span>
-                                @if ($pulang_pergi == 1)
-                                    <br>
-                                    <span>{{ $kode_booking_pulang }}</span>
-                                @endif
+                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                            <span>{{ $kode_booking }}</span>
+                            @if ($pulang_pergi == 1)
+                                <br>
+                                <span>{{ $kode_booking_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" colspan="2" style="text-align: center; vertical-align: top;">
-                            @if ($loop->first)
-                                <span>{{ $rute_pesawat }}</span>
-                                @if ($pulang_pergi == 1)
-                                    <br>
-                                    <span>{{ $rute_pesawat_pulang }}</span>
-                                @endif
+                        <td class="" colspan="2" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                            <span>{{ $rute_pesawat }}</span>
+                            @if ($pulang_pergi == 1)
+                                <br>
+                                <span>{{ $rute_pesawat_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" style="text-align: center; vertical-align: top;">
-                            @if ($loop->first)
-                                <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat)) }}</span>
-                                @if ($pulang_pergi == 1 && $jadwal_berangkat_pesawat_pulang != '')
-                                    <br>
-                                    <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat_pulang)) }}</span>
-                                @endif
+                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                            <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat)) }}</span>
+                            @if ($pulang_pergi == 1 && $jadwal_berangkat_pesawat_pulang != '')
+                                <br>
+                                <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat_pulang)) }}</span>
                             @endif
                         </td>
+                    @endif
                     <td class="">
                         <span>Rp.{{ number_format($harga_satuan, 0, ',', '.') }}</span>
                     </td>
