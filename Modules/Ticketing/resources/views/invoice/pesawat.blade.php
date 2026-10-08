@@ -18,9 +18,9 @@
         }
         header {
             position: fixed;
-            top: -210px;
-            left: 0px;
-            right: 0px;
+            top: 30px;
+            left: 30px;
+            right: 30px;
             height: 200px;
         }
         main {
