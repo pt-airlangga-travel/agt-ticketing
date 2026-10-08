@@ -10,7 +10,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet">
     <style>
-        @page { margin: 0px; margin-top: 0px; }
+        @page {
+            margin-top: 220px;
+            margin-bottom: 30px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+        header {
+            position: fixed;
+            top: -190px;
+            left: 0px;
+            right: 0px;
+            height: 190px;
+        }
+        main {
+            display: block;
+        }
 
         * {
             margin: 0px;
@@ -20,7 +35,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             font-size: 12px;
-            margin: 10px 30px;
+            margin: 0px;
         }
 
         table {
@@ -137,11 +152,8 @@
 
 <body>
 
-    <table style="width: 100%; border: none;">
-        <thead>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <div class="logo-container" style="position: relative">
+    <header>
+        <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -218,13 +230,9 @@
         </tr>
     </table>
 
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <table class="tg" style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
+    </header>
+    <main>
+        <table class="tg" style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
         <thead>
             <tr style="width: 100%">
                 <th class=""
@@ -363,10 +371,7 @@
             </tr>
         </thead>
     </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    </main>
 </body>
 
 </html>

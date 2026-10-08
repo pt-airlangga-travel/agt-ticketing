@@ -23,7 +23,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             font-size: 12px;
-            margin: 10px 30px;
+            margin: 0px;
         }
 
         table {
@@ -140,11 +140,8 @@
 
 <body>
 
-    <table style="width: 100%; border: none;">
-        <thead>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <div class="logo-container" style="position: relative">
+    <header>
+        <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -221,13 +218,9 @@
         </tr>
     </table>
 
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <table class="tg"
+    </header>
+    <main>
+        <table class="tg"
         style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
         <thead>
             <tr style="width: 100%">
@@ -367,10 +360,7 @@
             </tr>
         </thead>
     </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    </main>
 </body>
 
 </html>

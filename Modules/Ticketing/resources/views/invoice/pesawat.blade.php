@@ -10,6 +10,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet">
     <style>
+        @page {
+            margin-top: 220px;
+            margin-bottom: 30px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+        header {
+            position: fixed;
+            top: -190px;
+            left: 0px;
+            right: 0px;
+            height: 190px;
+        }
+        main {
+            display: block;
+        }
         * {
             margin: 0px;
             padding: 0px;
@@ -18,7 +34,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             font-size: 12px;
-            margin: 30px 30px;
+            margin: 0px;
         }
 
         table {
@@ -143,11 +159,8 @@
 
 <body>
 
-    <table style="width: 100%; border: none;">
-        <thead>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <div class="logo-container" style="position: relative">
+    <header>
+        <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -218,13 +231,9 @@
         </tr>
     </table>
 
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="border: none; padding: 0; text-align: left;">
-                    <table class="tg"
+    </header>
+    <main>
+        <table class="tg"
         style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
         <thead>
             <tr style="width: 100%">
@@ -286,36 +295,42 @@
                             <span>{{ $penumpang['unit_kerja_pembayar'] }}</span>
                         @endif
                     </td>
-                    @if ($loop->first)
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
-                            <span>{{ $nomer_penerbangan }}</span>
-                            @if ($pulang_pergi == 1)
-                                <br>
-                                <span>{{ $nomer_penerbangan_pulang }}</span>
+                        <td class="" style="text-align: center; vertical-align: top;">
+                            @if ($loop->first)
+                                <span>{{ $nomer_penerbangan }}</span>
+                                @if ($pulang_pergi == 1)
+                                    <br>
+                                    <span>{{ $nomer_penerbangan_pulang }}</span>
+                                @endif
                             @endif
                         </td>
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
-                            <span>{{ $kode_booking }}</span>
-                            @if ($pulang_pergi == 1)
-                                <br>
-                                <span>{{ $kode_booking_pulang }}</span>
+                        <td class="" style="text-align: center; vertical-align: top;">
+                            @if ($loop->first)
+                                <span>{{ $kode_booking }}</span>
+                                @if ($pulang_pergi == 1)
+                                    <br>
+                                    <span>{{ $kode_booking_pulang }}</span>
+                                @endif
                             @endif
                         </td>
-                        <td class="" colspan="2" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
-                            <span>{{ $rute_pesawat }}</span>
-                            @if ($pulang_pergi == 1)
-                                <br>
-                                <span>{{ $rute_pesawat_pulang }}</span>
+                        <td class="" colspan="2" style="text-align: center; vertical-align: top;">
+                            @if ($loop->first)
+                                <span>{{ $rute_pesawat }}</span>
+                                @if ($pulang_pergi == 1)
+                                    <br>
+                                    <span>{{ $rute_pesawat_pulang }}</span>
+                                @endif
                             @endif
                         </td>
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
-                            <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat)) }}</span>
-                            @if ($pulang_pergi == 1 && $jadwal_berangkat_pesawat_pulang != '')
-                                <br>
-                                <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat_pulang)) }}</span>
+                        <td class="" style="text-align: center; vertical-align: top;">
+                            @if ($loop->first)
+                                <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat)) }}</span>
+                                @if ($pulang_pergi == 1 && $jadwal_berangkat_pesawat_pulang != '')
+                                    <br>
+                                    <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat_pulang)) }}</span>
+                                @endif
                             @endif
                         </td>
-                    @endif
                     <td class="">
                         <span>Rp.{{ number_format($harga_satuan, 0, ',', '.') }}</span>
                     </td>
@@ -389,10 +404,7 @@
             </tr>
         </thead>
     </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    </main>
 </body>
 
 </html>
