@@ -10,22 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet">
     <style>
-        @page {
-            margin-top: 220px;
-            margin-bottom: 30px;
-            margin-left: 30px;
-            margin-right: 30px;
-        }
-        header {
-            position: fixed;
-            top: -190px;
-            left: 0px;
-            right: 0px;
-            height: 190px;
-        }
-        main {
-            display: block;
-        }
+        @page { margin: 0px; margin-top: 0px; }
 
         * {
             margin: 0px;
@@ -35,7 +20,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             font-size: 12px;
-            margin: 0px;
+            margin: 30px 30px;
         }
 
         table {
@@ -152,8 +137,13 @@
 
 <body>
 
-    <header>
-        <div class="logo-container" style="position: relative">
+    
+
+    <table class="tg" style="font-weight: 700; font-family: 'Roboto', sans-serif; margin-top: 12px; margin-bottom: 12px;">
+        <thead>
+            <tr style="border: none !important;">
+                <th colspan="10" style="border: none !important; border-width: 0px !important; padding: 0; text-align: left; font-weight: normal; margin: 0; padding-bottom: 15px;">
+                    <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -229,11 +219,9 @@
             </td>
         </tr>
     </table>
-
-    </header>
-    <main>
-        <table class="tg" style="font-weight: 700; font-family: 'Roboto', sans-serif; margin-top: 12px; margin-bottom: 12px;">
-        <thead>
+                </th>
+            </tr>
+            
             <tr style="width: 100%">
                 <th class=""
                     style="
@@ -377,7 +365,6 @@
             </tr>
         </thead>
     </table>
-    </main>
 </body>
 
 </html>
