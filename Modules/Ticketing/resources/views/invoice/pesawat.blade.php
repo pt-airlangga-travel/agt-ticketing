@@ -142,6 +142,14 @@
 </head>
 
 <body>
+    @php
+        $chunks = array_chunk($penumpangs, 3);
+    @endphp
+    @foreach ($chunks as $chunkIndex => $chunk)
+        @if (!$loop->first)
+            <div style="page-break-before: always;"></div>
+        @endif
+        
 
     <div class="logo-container" style="position: relative">
         <div style="float: left">
@@ -258,10 +266,10 @@
                 <td class="" style="text-align: center; width: 20%;">Date</td>
                 <td class=""></td>
             </tr>
-            @foreach ($penumpangs as $index => $penumpang)
+            @foreach ($chunk as $index => $penumpang)
                 <tr>
                     <td class="" style="text-align: center; font-weight: 400">
-                        <span>{{ $loop->iteration }}</span>
+                        <span>{{ ($chunkIndex * 3) + $loop->iteration }}</span>
                     </td>
                     <td class="" style="text-align: center;">
                         <span>{{ $penumpang['penumpang_id'] }}</span>
@@ -277,28 +285,28 @@
                         @endif
                     </td>
                     @if ($loop->first)
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                        <td class="" rowspan="{{ count($chunk) }}" style="text-align: center;">
                             <span>{{ $nomer_penerbangan }}</span>
                             @if ($pulang_pergi == 1)
                                 <br>
                                 <span>{{ $nomer_penerbangan_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                        <td class="" rowspan="{{ count($chunk) }}" style="text-align: center;">
                             <span>{{ $kode_booking }}</span>
                             @if ($pulang_pergi == 1)
                                 <br>
                                 <span>{{ $kode_booking_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" colspan="2" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                        <td class="" colspan="2" rowspan="{{ count($chunk) }}" style="text-align: center;">
                             <span>{{ $rute_pesawat }}</span>
                             @if ($pulang_pergi == 1)
                                 <br>
                                 <span>{{ $rute_pesawat_pulang }}</span>
                             @endif
                         </td>
-                        <td class="" rowspan="{{ count($penumpangs) }}" style="text-align: center;">
+                        <td class="" rowspan="{{ count($chunk) }}" style="text-align: center;">
                             <span>{{ date('d-M-y H:i', strtotime($jadwal_berangkat_pesawat)) }}</span>
                             @if ($pulang_pergi == 1 && $jadwal_berangkat_pesawat_pulang != '')
                                 <br>
@@ -379,6 +387,8 @@
             </tr>
         </thead>
     </table>
+
+    @endforeach
 </body>
 
 </html>

@@ -136,6 +136,14 @@
 </head>
 
 <body>
+    @php
+        $chunks = array_chunk($penumpangs, 3);
+    @endphp
+    @foreach ($chunks as $chunkIndex => $chunk)
+        @if (!$loop->first)
+            <div style="page-break-before: always;"></div>
+        @endif
+        
 
     <div class="logo-container" style="position: relative">
         <div style="float: left">
@@ -257,10 +265,10 @@
                 <td class="" style="text-align: center">Date</td>
                 <td class=""></td>
             </tr>
-            @foreach ($penumpangs as $index => $penumpang)
+            @foreach ($chunk as $index => $penumpang)
                 <tr>
                     <td class="" style="text-align: center; font-weight: 400;padding:0">
-                        <span>{{ $loop->iteration }}</span>
+                        <span>{{ ($chunkIndex * 3) + $loop->iteration }}</span>
                     </td>
                     <td class="">
                         <span>{{ $tanggal_pemesanan }}</span>
@@ -353,6 +361,8 @@
             </tr>
         </thead>
     </table>
+
+    @endforeach
 </body>
 
 </html>
