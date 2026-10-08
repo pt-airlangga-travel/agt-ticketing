@@ -293,25 +293,22 @@
                     </td>
                 </tr>
             @endforeach
-            @if ($loop->last)
             <tr style="width: 100%">
                 <td id="total" class="" colspan="9" style="text-align: right">
                     TOTAL IDR
                 </td>
-                <td class="">Rp.{{ number_format($harga_total, 0, ',', '.') }}</td>
+                <td class="">Rp.{{ number_format(($harga_satuan * count($chunk)), 0, ',', '.') }}</td>
             </tr>
             <tr style="width: 100%">
                 <td id="tagihan" class="" colspan="9"
                     style="text-align: right; font-family: 'Roboto', sans-serif;">
                     Ditagihkan
                 </td>
-                <td class="">Rp.{{ number_format($harga_total, 0, ',', '.') }}</td>
+                <td class="">Rp.{{ number_format(($harga_satuan * count($chunk)), 0, ',', '.') }}</td>
             </tr>
-            @endif
         </tbody>
     </table>
 
-    @if ($loop->last)
     <!-- terbilang -->
     <table style="margin-bottom: 12px">
         <thead>
@@ -364,8 +361,6 @@
             </tr>
         </thead>
     </table>
-    @endif
-
     @endforeach
 </body>
 
