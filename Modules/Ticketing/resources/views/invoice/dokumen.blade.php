@@ -140,7 +140,11 @@
 
 <body>
 
-    <div class="logo-container" style="position: relative">
+    <table style="width: 100%; border: none;">
+        <thead>
+            <tr>
+                <td style="border: none; padding: 0; text-align: left;">
+                    <div class="logo-container" style="position: relative">
         <div style="float: left">
             <img style="height: 32px" src="{{ $logo_agt }}" />
             <div style="width: 192px; position: relative">
@@ -217,7 +221,13 @@
         </tr>
     </table>
 
-    <table class="tg"
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: none; padding: 0; text-align: left;">
+                    <table class="tg"
         style="margin-top: 12px; margin-bottom: 12px; font-weight: 700; font-family: 'Roboto', sans-serif;">
         <thead>
             <tr style="width: 100%">
@@ -356,6 +366,10 @@
                 </td>
             </tr>
         </thead>
+    </table>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </body>
 
