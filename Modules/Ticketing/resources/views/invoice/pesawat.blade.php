@@ -11,16 +11,13 @@
         rel="stylesheet">
     <style>
         @page {
-            margin-top: 240px;
-            margin-bottom: 30px;
-            margin-left: 30px;
-            margin-right: 30px;
+            margin: 240px 30px 30px 30px;
         }
         header {
             position: fixed;
-            top: 30px;
-            left: 30px;
-            right: 30px;
+            top: -210px;
+            left: 0px;
+            right: 0px;
             height: 200px;
         }
         main {
