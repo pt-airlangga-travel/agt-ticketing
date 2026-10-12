@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Konfigurasi PHPUnit KHUSUS modul Ticketing.
+
+    Tujuan: menjalankan test dalam database SQLite in-memory sehingga TIDAK PERNAH
+    menyentuh DB MySQL live yang ada di .env.
+
+    Cara pakai:
+        php.exe vendor/bin/phpunit -c phpunit-ticketing.xml
+
+    Lihat tests/Feature/Ticketing/TicketingTestCase.php untuk guard tambahan yang
+    menggagalkan test bila koneksi ternyata bukan sqlite.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Ticketing">
+            <directory>tests/Feature/Ticketing</directory>
+            <directory>tests/Unit/Ticketing</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>Modules/Ticketing/app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <!-- WAJIB: paksa SQLite in-memory, jangan pakai DB dari .env -->
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+    </php>
+</phpunit>

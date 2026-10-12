@@ -234,13 +234,13 @@ class RiwayatPembayaranRelationManager extends RelationManager
                             'status_bukti_bayar' => $data['status_bukti_bayar'] ?? false,
                             'user_id' => auth()->id(),
                         ];
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_pembayar_id')) {
                             unset($payload['tckt_pembayar_id']);
                         }
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'tckt_unit_kerja_id')) {
                             unset($payload['tckt_unit_kerja_id']);
                         }
-                        if (! Schema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
+                        if (! DBSchema::hasColumn('ticketing_pembayaran_penumpang', 'nama_pembayar')) {
                             unset($payload['nama_pembayar']);
                         }
 
