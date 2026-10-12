@@ -79,7 +79,7 @@
                 {{ __('filament-tables::table.column_manager.heading') }}
             </{{ $headingTag }}>
 
-            <div class="flex items-center gap-x-2">
+            <div class="flex items-center gap-x-3 text-xs">
                 @if ($hasToggleableColumns)
                     <x-filament::link
                         color="gray"
@@ -127,18 +127,20 @@
         </div>
 
         @if ($hasToggleableColumns)
-            <div class="fi-ta-col-manager-item !pt-2 pb-2 border-b border-gray-200 dark:border-white/10">
-                <label class="fi-ta-col-manager-label font-medium cursor-pointer">
-                    <input
-                        type="checkbox"
-                        class="fi-checkbox-input fi-valid"
-                        id="column-manager-toggle-all"
-                        x-bind:checked="allColumnsState.checked"
-                        x-effect="$el.indeterminate = allColumnsState.indeterminate"
-                        x-on:change="toggleAllColumns($el.checked)"
-                    />
-                    <span>Pilih Semua Kolom</span>
-                </label>
+            <div class="my-3 pb-3 border-b border-gray-200 dark:border-white/10">
+                <div class="fi-ta-col-manager-item !pt-0">
+                    <label class="fi-ta-col-manager-label font-medium cursor-pointer">
+                        <input
+                            type="checkbox"
+                            class="fi-checkbox-input fi-valid"
+                            id="column-manager-toggle-all"
+                            x-bind:checked="allColumnsState.checked"
+                            x-effect="$el.indeterminate = allColumnsState.indeterminate"
+                            x-on:change="toggleAllColumns($el.checked)"
+                        />
+                        <span>Pilih Semua Kolom</span>
+                    </label>
+                </div>
             </div>
         @endif
 
@@ -151,7 +153,7 @@
             {{
                 (new ComponentAttributeBag)
                     ->grid($columns, GridDirection::Column)
-                    ->class(['fi-ta-col-manager-items'])
+                    ->class(['fi-ta-col-manager-items', '!mt-0 pt-1' => $hasToggleableColumns])
             }}
         >
             <template
