@@ -72,17 +72,9 @@ trait ListsReservasiByEntity
 
         $query = $this->getTableQueryForExport();
 
-        // Generate dynamic filename based on reservation type and filtered tanggal_pemesanan
-        $reservationType = $this->getReservationTypeSlug();
-        
-        // Get date from first record's tanggal_pemesanan (respects filter)
-        $firstRecord = $query->with('ticketingPemesanan')->first();
-        $filterDate = $firstRecord?->ticketingPemesanan?->tanggal_pemesanan ?? now();
-        $dateString = Carbon::parse($filterDate)->format('d/m/Y');
-        
-        $filename = sprintf('%s-%s.xlsx', $reservationType, $dateString);
+        $filename = $this->getExportFilename($query);
 
-        return response()->streamDownload(function () use ($columns, $query): void {
+        return response()->streamDownload(function () use ($columns, $query, $filename): void {
             $writer = app(Writer::class);
             $writer->openToBrowser($filename);
 
@@ -151,6 +143,36 @@ trait ListsReservasiByEntity
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    protected function getExportFilename(Builder $query): string
+    {
+        $reservationType = $this->getReservationTypeSlug();
+
+        $dateColumn = str_contains(static::class, 'ReservasiDokumens')
+            ? 'ticketing_pemesanan.tanggal_pemesanan'
+            : 'p.tanggal_pemesanan';
+
+        try {
+            $startDate = (clone $query)->min($dateColumn);
+            $endDate = (clone $query)->max($dateColumn);
+        } catch (\Throwable $e) {
+            $startDate = null;
+            $endDate = null;
+        }
+
+        $startStr = $startDate ? Carbon::parse($startDate)->format('d-m-Y') : now()->format('d-m-Y');
+        $endStr = $endDate ? Carbon::parse($endDate)->format('d-m-Y') : now()->format('d-m-Y');
+
+        if ($startStr === $endStr) {
+            $dateString = $startStr;
+        } else {
+            $dateString = sprintf('%s_%s', $startStr, $endStr);
+        }
+
+        $filename = sprintf('%s_%s.xlsx', $reservationType, $dateString);
+
+        return str_replace(['/', '\\'], '-', $filename);
     }
 
     /**
