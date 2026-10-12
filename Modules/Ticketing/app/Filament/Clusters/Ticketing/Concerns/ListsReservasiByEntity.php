@@ -113,6 +113,9 @@ trait ListsReservasiByEntity
                             }
                         } elseif ($name === 'detail_pulang_pergi') {
                             $value = $record->formatted_detail_pulang_pergi ?? '-';
+                        } elseif (str_starts_with($name, 'pulang_pergi_')) {
+                            // Kolom pecahan "Pulang" (state custom di tabel, bukan atribut model).
+                            $value = $this->exportPulangPergiValue($record, $name);
                         } else {
                             $value = data_get($record, $name);
                         }
@@ -147,6 +150,31 @@ trait ListsReservasiByEntity
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    /**
+     * Nilai kolom "Pulang" untuk export Excel.
+     *
+     * Kolom-kolom ini memakai state() custom di tabel (dari pulangPergiSegmens()),
+     * bukan atribut/relasi model — jadi data_get() mengembalikan null. Di sini
+     * kita baca langsung dari parser model, konsisten dengan yang tampil di tabel.
+     */
+    protected function exportPulangPergiValue($record, string $name): mixed
+    {
+        // "pulang_pergi_status" adalah status keseluruhan, bukan per-segmen.
+        if ($name === 'pulang_pergi_status') {
+            return $record->pulangPergiStatus() ?? '-';
+        }
+
+        $field = (string) str_replace('pulang_pergi_', '', $name);
+
+        $values = collect($record->pulangPergiSegmens())
+            ->pluck($field)
+            ->filter(fn ($v) => filled($v))
+            ->values()
+            ->all();
+
+        return $values ?: '-';
     }
 
     protected function getExportFilename(Builder $query): string

@@ -232,15 +232,6 @@ class ReservasiPesawatsTable
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('detail_pulang_pergi')
-                    ->label('Detail Pulang')
-                    ->state(fn ($record) => $record->formatted_detail_pulang_pergi)
-                    ->wrap()
-                    ->searchable(isIndividual: true, isGlobal: false, query: function ($query, $search) {
-                        $query->where('detail_pulang_pergi', 'like', "%{$search}%");
-                    })
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('pulang_pergi_status')
                     ->label('Status Pulang')
                     ->state(fn ($record) => $record->pulangPergiStatus())

@@ -29,11 +29,14 @@ class PulangPergiKolomTest extends TicketingTestCase
      */
     protected function tiketPesawat(array $detailPulangPergi, int $pulangPergi = 1): TicketingTiketPesawat
     {
+        static $counter = 0;
+        $counter++;
+
         $unitKerja = TicketingUnitKerja::create(['nama_unit_kerja' => 'Unit Kerja Test']);
         $kategori = TicketingKategoriPemesanan::create(['nama_kategori' => 'Ticket']);
 
         $pemesanan = TicketingPemesanan::create([
-            'invoice' => '2610100001',
+            'invoice' => '26101000' . str_pad((string) $counter, 2, '0', STR_PAD_LEFT),
             'nama_customer' => 'Customer Test',
             'tckt_kategori_pemesanan_id' => $kategori->id,
             'tckt_unit_kerja_id' => $unitKerja->id,
@@ -217,11 +220,74 @@ class PulangPergiKolomTest extends TicketingTestCase
             $this->assertStringContainsString("TextColumn::make('{$kolom}')", $isi, "Kolom {$kolom} harus terdaftar.");
         }
 
-        // Kolom gabungan lama tetap ada tapi default-hidden.
-        $this->assertStringContainsString(
-            "->toggleable(isToggledHiddenByDefault: true)",
+        // Kolom gabungan lama sudah dihapus dari tabel.
+        $this->assertStringNotContainsString(
+            "TextColumn::make('detail_pulang_pergi')",
             $isi,
-            'Kolom lama detail_pulang_pergi sebaiknya default-hidden.'
+            'Kolom lama detail_pulang_pergi sudah dihapus dari tabel.'
         );
+    }
+
+    public function test_export_excel_mengisi_nilai_kolom_pulang(): void
+    {
+        // Kolom pecahan "Pulang" diexport lewat exportPulangPergiValue()
+        // (bukan data_get) — harus terisi dari parser model.
+        $isi = file_get_contents(module_path('Ticketing', 'app/Filament/Clusters/Ticketing/Concerns/ListsReservasiByEntity.php'));
+
+        $this->assertStringContainsString(
+            "str_starts_with(\$name, 'pulang_pergi_')",
+            $isi,
+            'Export harus punya cabang khusus untuk kolom pulang_pergi_*.'
+        );
+        $this->assertStringContainsString('exportPulangPergiValue', $isi);
+        $this->assertStringContainsString('pulangPergiSegmens()', $isi);
+    }
+
+    public function test_export_pulang_pergi_value_untuk_record_nyata(): void
+    {
+        // Simulasi logika exportPulangPergiValue() terhadap record nyata.
+        $tiket = $this->tiketPesawat([
+            'status_pemesanan_pulang_pergi' => 'Confirmed',
+            'segmen' => [[
+                'maskapai_id' => 1,
+                'nomor_penerbangan' => 'GA-101',
+                'nomor_ticket' => 'TICKET-RETURN',
+                'kode_booking_pesawat' => 'BK-RETURN',
+                'kelas' => 'Bisnis',
+                'bandara_berangkat_id' => 2,
+                'bandara_tiba_id' => 1,
+                'jadwal_berangkat_pesawat' => '2026-10-20 09:30:00',
+                'jadwal_tiba_pesawat' => '2026-10-20 11:45:00',
+            ]],
+        ]);
+
+        // Replika persis logika exportPulangPergiValue untuk field maskapai:
+        $values = collect($tiket->pulangPergiSegmens())
+            ->pluck('maskapai')
+            ->filter(fn ($v) => filled($v))
+            ->values()
+            ->all();
+
+        $this->assertSame(['Garuda'], $values, 'Kolom Maskapai Pulang di Excel harus terisi "Garuda".');
+
+        // Untuk nomor penerbangan:
+        $values = collect($tiket->pulangPergiSegmens())
+            ->pluck('nomor_penerbangan')
+            ->filter(fn ($v) => filled($v))
+            ->values()
+            ->all();
+        $this->assertSame(['GA-101'], $values);
+
+        // Status pulang:
+        $this->assertSame('Confirmed', $tiket->pulangPergiStatus() ?? '-');
+
+        // Record bukan round-trip → semua kolom pulang berisi '-'.
+        $tiketSekaliJalan = $this->tiketPesawat([], pulangPergi: 0);
+        $values = collect($tiketSekaliJalan->pulangPergiSegmens())
+            ->pluck('maskapai')
+            ->filter(fn ($v) => filled($v))
+            ->values()
+            ->all();
+        $this->assertSame([], $values, 'Bukan round-trip → kolom pulang kosong (tampil "-" di Excel).');
     }
 }
