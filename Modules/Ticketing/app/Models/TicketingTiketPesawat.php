@@ -35,15 +35,34 @@ class TicketingTiketPesawat extends Model
     protected static array $maskapaiCache = [];
     protected static array $bandaraCache = [];
 
-    public function getFormattedDetailPulangPergiAttribute(): string
+    /**
+     * Parser terstruktur untuk detail_pulang_pergi.
+     *
+     * Mengembalikan array segmen; setiap segmen berisi nilai yang SUDAH
+     * ter-resolve (nama maskapai, kode bandara, tanggal ter-format), siap
+     * dipakai kolom tabel masing-masing. Mengembalikan [] bila bukan
+     * round-trip atau detail kosong/tidak valid.
+     *
+     * @return array<int, array{
+     *     maskapai: ?string,
+     *     nomor_penerbangan: ?string,
+     *     nomor_ticket: ?string,
+     *     kode_booking: ?string,
+     *     kelas: ?string,
+     *     rute: ?string,
+     *     jadwal_berangkat: ?string,
+     *     jadwal_tiba: ?string,
+     * }>
+     */
+    public function pulangPergiSegmens(): array
     {
         if (($this->ticketingPemesanan && ! $this->ticketingPemesanan->pulang_pergi) || empty($this->detail_pulang_pergi)) {
-            return '-';
+            return [];
         }
 
         $detail = json_decode((string) $this->detail_pulang_pergi, true);
         if (! is_array($detail) || empty($detail)) {
-            return '-';
+            return [];
         }
 
         $segmens = [];
@@ -53,10 +72,13 @@ class TicketingTiketPesawat extends Model
             $segmens = [$detail];
         }
 
-        $status = $detail['status_pemesanan_pulang_pergi'] ?? null;
-        $formattedSegmens = [];
+        $result = [];
 
-        foreach ($segmens as $idx => $seg) {
+        foreach ($segmens as $seg) {
+            if (! is_array($seg)) {
+                continue;
+            }
+
             $maskapaiId = $seg['maskapai_id'] ?? ($seg['maskapai_id_pulang'] ?? null);
             $maskapai = null;
             if ($maskapaiId) {
@@ -65,11 +87,6 @@ class TicketingTiketPesawat extends Model
                 }
                 $maskapai = static::$maskapaiCache[$maskapaiId];
             }
-
-            $nomorPenerbangan = $seg['nomor_penerbangan'] ?? ($seg['nomor_penerbangan_pulang'] ?? null);
-            $nomorTiket = $seg['nomor_ticket'] ?? ($seg['nomor_ticket_pulang'] ?? null);
-            $kodeBooking = $seg['kode_booking_pesawat'] ?? ($seg['kode_booking_pesawat_pulang'] ?? null);
-            $kelas = $seg['kelas'] ?? ($seg['kelas_pulang'] ?? null);
 
             $asalId = $seg['bandara_berangkat_id'] ?? ($seg['bandara_berangkat_id_pulang'] ?? null);
             $asal = null;
@@ -116,15 +133,60 @@ class TicketingTiketPesawat extends Model
                 }
             }
 
+            $result[] = [
+                'maskapai' => $maskapai,
+                'nomor_penerbangan' => $seg['nomor_penerbangan'] ?? ($seg['nomor_penerbangan_pulang'] ?? null),
+                'nomor_ticket' => $seg['nomor_ticket'] ?? ($seg['nomor_ticket_pulang'] ?? null),
+                'kode_booking' => $seg['kode_booking_pesawat'] ?? ($seg['kode_booking_pesawat_pulang'] ?? null),
+                'kelas' => $seg['kelas'] ?? ($seg['kelas_pulang'] ?? null),
+                'rute' => $rute ?: null,
+                'jadwal_berangkat' => $jadwalBerangkat ?: null,
+                'jadwal_tiba' => $jadwalTiba ?: null,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Status pemesanan pulang-pergi dari detail JSON (mis. Confirmed), null bila kosong.
+     */
+    public function pulangPergiStatus(): ?string
+    {
+        if (empty($this->detail_pulang_pergi)) {
+            return null;
+        }
+
+        $detail = json_decode((string) $this->detail_pulang_pergi, true);
+
+        if (! is_array($detail)) {
+            return null;
+        }
+
+        $status = $detail['status_pemesanan_pulang_pergi'] ?? null;
+
+        return is_string($status) && $status !== '' ? $status : null;
+    }
+
+    public function getFormattedDetailPulangPergiAttribute(): string
+    {
+        $segmens = $this->pulangPergiSegmens();
+        if (empty($segmens)) {
+            return '-';
+        }
+
+        $formattedSegmens = [];
+
+        foreach ($segmens as $idx => $seg) {
             $parts = [];
-            if ($maskapai) $parts[] = $maskapai;
-            if ($nomorPenerbangan) $parts[] = $nomorPenerbangan;
-            if ($rute) $parts[] = "({$rute})";
-            if ($jadwalBerangkat) $parts[] = "Berangkat: {$jadwalBerangkat}";
-            if ($jadwalTiba) $parts[] = "Tiba: {$jadwalTiba}";
-            if ($nomorTiket) $parts[] = "Tiket: {$nomorTiket}";
-            if ($kodeBooking) $parts[] = "Kode Booking: {$kodeBooking}";
-            if ($kelas) $parts[] = "Kelas: {$kelas}";
+            if ($seg['maskapai']) $parts[] = $seg['maskapai'];
+            if ($seg['nomor_penerbangan']) $parts[] = $seg['nomor_penerbangan'];
+            if ($seg['rute']) $parts[] = "({$seg['rute']})";
+            if ($seg['jadwal_berangkat']) $parts[] = "Berangkat: {$seg['jadwal_berangkat']}";
+            if ($seg['jadwal_tiba']) $parts[] = "Tiba: {$seg['jadwal_tiba']}";
+            if ($seg['nomor_ticket']) $parts[] = "Tiket: {$seg['nomor_ticket']}";
+            if ($seg['kode_booking']) $parts[] = "Kode Booking: {$seg['kode_booking']}";
+            if ($seg['kelas']) $parts[] = "Kelas: {$seg['kelas']}";
 
             if (! empty($parts)) {
                 $prefix = count($segmens) > 1 ? 'Segmen ' . ($idx + 1) . ': ' : '';
@@ -137,6 +199,7 @@ class TicketingTiketPesawat extends Model
         }
 
         $res = implode('; ', $formattedSegmens);
+        $status = $this->pulangPergiStatus();
         if ($status) {
             $res .= " [Status: {$status}]";
         }

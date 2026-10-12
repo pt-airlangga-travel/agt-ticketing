@@ -145,30 +145,51 @@ class TemuanRegresiTest extends TicketingTestCase
 
     /**
      * T2 — Service menulis `detail_pulang_pergi` sebagai JSON dengan struktur
-     * `segmen[]`, sedangkan PrintInvoiceController membaca kunci format lama
-     * (bandara_berangkat_id_pulang, nomor_penerbangan_pulang, ...).
+     * `segmen[]`. SEJAK pemecahan kolom "Detail Pulang" (fitur kolom terpisah),
+     * model TicketingTiketPesawat punya parser terstruktur (pulangPergiSegmens)
+     * yang membaca struktur `segmen[]` DAN format lama.
      *
-     * Test ini mengunci ketidakcocokan kunci tersebut.
+     * Test ini mengunci: struktur yang ditulis service harus bisa dibaca
+     * parser model (tidak ada lagi ketidakcocokan kunci di jalur tabel).
+     *
+     * CATATAN: PrintInvoiceController masih membaca kunci format lama
+     * (bandara_berangkat_id_pulang, ...) — bug T2 di invoice belum diperbaiki,
+     * menunggu keputusan pemilik produk (lihat dokumen verifikasi §2).
      */
-    public function test_t2_kunci_detail_pulang_pergi_tidak_cocok_dengan_pembaca_invoice(): void
+    public function test_t2_struktur_segmen_service_terbaca_oleh_parser_model(): void
     {
         $service = $this->moduleFile('app/Services/ReservasiPesawatService.php');
-        $controller = $this->moduleFile('app/Http/Controllers/PrintInvoiceController.php');
+        $model = $this->moduleFile('app/Models/TicketingTiketPesawat.php');
 
         // Service menulis struktur bersarang ini:
         $this->assertStringContainsString("'segmen' => \$segmenPulang", $service);
 
-        // Pembaca invoice tidak pernah menyentuh 'segmen'...
-        $this->assertStringNotContainsString("['segmen']", $controller);
+        // Parser model membaca kunci 'segmen'...
+        $this->assertStringContainsString("\$detail['segmen']", $model);
 
-        // ...melainkan kunci datar format lama:
-        $this->assertStringContainsString("bandara_berangkat_id_pulang", $controller);
-        $this->assertStringContainsString("nomor_penerbangan_pulang", $controller);
+        // ...dan setiap kunci yang ditulis segmenPulang() juga dibaca parser
+        // (parser memakai kunci baru; format lama dicek via fallback *_pulang).
+        foreach ([
+            'maskapai_id',
+            'bandara_berangkat_id',
+            'bandara_tiba_id',
+            'nomor_penerbangan',
+            'nomor_ticket',
+            'kode_booking_pesawat',
+            'kelas',
+            'jadwal_berangkat_pesawat',
+            'jadwal_tiba_pesawat',
+        ] as $kunci) {
+            $this->assertStringContainsString(
+                "\$seg['{$kunci}']",
+                $model,
+                "Parser model harus membaca kunci '{$kunci}' yang ditulis service."
+            );
+        }
 
-        // Konsekuensi yang dikunci: tidak ada satu pun kunci itu di dalam segmenPulang().
-        $mapperSegmen = substr($service, strpos($service, 'private function segmenPulang'));
-        $this->assertStringNotContainsString('bandara_berangkat_id_pulang', $mapperSegmen);
-        $this->assertStringNotContainsString('nomor_penerbangan_pulang', $mapperSegmen);
+        // Parser juga tetap kompatibel dengan format V1 lama (*_pulang).
+        $this->assertStringContainsString("bandara_berangkat_id_pulang", $model);
+        $this->assertStringContainsString("nomor_penerbangan_pulang", $model);
     }
 
     /**

@@ -239,6 +239,74 @@ class ReservasiPesawatsTable
                     ->searchable(isIndividual: true, isGlobal: false, query: function ($query, $search) {
                         $query->where('detail_pulang_pergi', 'like', "%{$search}%");
                     })
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('pulang_pergi_status')
+                    ->label('Status Pulang')
+                    ->state(fn ($record) => $record->pulangPergiStatus())
+                    ->placeholder('-')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Confirmed' => 'success',
+                        'Canceled', 'Refund' => 'danger',
+                        default => 'info',
+                    })
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_maskapai')
+                    ->label('Maskapai Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('maskapai')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_nomor_penerbangan')
+                    ->label('No. Penerbangan Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('nomor_penerbangan')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_rute')
+                    ->label('Rute Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('rute')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_jadwal_berangkat')
+                    ->label('Jadwal Berangkat Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('jadwal_berangkat')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_jadwal_tiba')
+                    ->label('Jadwal Tiba Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('jadwal_tiba')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_nomor_ticket')
+                    ->label('No. Tiket Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('nomor_ticket')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_kode_booking')
+                    ->label('Kode Booking Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('kode_booking')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
+                    ->toggleable(),
+
+                TextColumn::make('pulang_pergi_kelas')
+                    ->label('Kelas Pulang')
+                    ->state(fn ($record) => collect($record->pulangPergiSegmens())->pluck('kelas')->filter()->values()->all())
+                    ->listWithLineBreaks()
+                    ->placeholder('-')
                     ->toggleable(),
 
                 TextColumn::make('ticketingBerangkatBandara.kode_bandara')
