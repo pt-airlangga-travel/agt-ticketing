@@ -46,6 +46,7 @@ class DashboardPanelProvider extends PanelProvider
             ->default()
             ->id('dashboard')
             ->path('dashboard')
+            ->homeUrl('/dashboard/ticketing')
             ->login(Login::class)
             ->colors([
                 'primary' => Color::rgb('32, 32, 108'),

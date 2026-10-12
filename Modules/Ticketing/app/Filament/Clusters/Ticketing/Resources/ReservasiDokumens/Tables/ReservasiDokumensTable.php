@@ -112,7 +112,7 @@ class ReservasiDokumensTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                ...self::reservasiCommonToggleableColumns(individualSearch: true),
+                ...self::reservasiCommonToggleableColumns(['ticketingPemesanan.pulang_pergi'], individualSearch: true),
             ])
             ->filters([
                 TanggalPemesananFilter::make(),
