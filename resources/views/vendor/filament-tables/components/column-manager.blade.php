@@ -79,54 +79,26 @@
                 {{ __('filament-tables::table.column_manager.heading') }}
             </{{ $headingTag }}>
 
-            <div
-                class="flex items-center text-xs"
-                style="display: flex; align-items: center; gap: 12px; font-size: 0.8125rem;"
-            >
-                @if ($hasToggleableColumns)
+            @if ($resetActionPosition === ColumnManagerResetActionPosition::Header)
+                <div>
                     <x-filament::link
-                        color="gray"
-                        tag="button"
-                        x-on:click="toggleAllColumns(true)"
+                        :attributes="
+                            \Filament\Support\prepare_inherited_attributes(
+                                new ComponentAttributeBag([
+                                    'color' => 'danger',
+                                    'tag' => 'button',
+                                    'wire:click' => 'resetTableColumnManager',
+                                    'wire:loading.remove.delay.' . config('filament.livewire_loading_delay', 'default') => '',
+                                    'wire:target' => 'resetTableColumnManager',
+                                    'x-on:click' => 'resetDeferredColumns',
+                                ])
+                            )
+                        "
                     >
-                        Tampilkan Semua
+                        {{ __('filament-tables::table.column_manager.actions.reset.label') }}
                     </x-filament::link>
-
-                    <span class="text-gray-300 dark:text-gray-600" style="color: rgba(156, 163, 175, 0.6);">|</span>
-
-                    <x-filament::link
-                        color="gray"
-                        tag="button"
-                        x-on:click="toggleAllColumns(false)"
-                    >
-                        Sembunyikan Semua
-                    </x-filament::link>
-                @endif
-
-                @if ($resetActionPosition === ColumnManagerResetActionPosition::Header)
-                    @if ($hasToggleableColumns)
-                        <span class="text-gray-300 dark:text-gray-600" style="color: rgba(156, 163, 175, 0.6);">|</span>
-                    @endif
-                    <div>
-                        <x-filament::link
-                            :attributes="
-                                \Filament\Support\prepare_inherited_attributes(
-                                    new ComponentAttributeBag([
-                                        'color' => 'danger',
-                                        'tag' => 'button',
-                                        'wire:click' => 'resetTableColumnManager',
-                                        'wire:loading.remove.delay.' . config('filament.livewire_loading_delay', 'default') => '',
-                                        'wire:target' => 'resetTableColumnManager',
-                                        'x-on:click' => 'resetDeferredColumns',
-                                    ])
-                                )
-                            "
-                        >
-                            {{ __('filament-tables::table.column_manager.actions.reset.label') }}
-                        </x-filament::link>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
 
         @if ($hasToggleableColumns)
