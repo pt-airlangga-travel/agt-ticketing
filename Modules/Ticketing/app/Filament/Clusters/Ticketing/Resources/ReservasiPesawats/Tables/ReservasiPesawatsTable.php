@@ -63,6 +63,12 @@ class ReservasiPesawatsTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
 
+                TextColumn::make('ticketingPemesanan.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pemesan')
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false)
+                    ->toggleable(),
+
                 TextColumn::make('penumpang_id')
                     ->label('Penumpang ID edit')
                     ->state(function ($record) {
@@ -107,6 +113,12 @@ class ReservasiPesawatsTable
                         });
                     })
                     ->listWithLineBreaks()
+                    ->toggleable(),
+
+                TextColumn::make('ticketingPemesanan.ticketingPembayaran.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pembayar')
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
 
                 TextColumn::make('ticketingMaskapai.nama_maskapai')

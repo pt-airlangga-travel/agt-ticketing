@@ -45,6 +45,11 @@ class ReservasiDokumenResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()
+            ->with([
+                'ticketingUnitKerja',
+                'ticketingPembayaran.ticketingUnitKerja',
+                'ticketingPenumpang',
+            ])
             ->select([
                 'ticketing_pemesanan.id',
                 'ticketing_pemesanan.invoice',

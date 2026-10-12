@@ -48,8 +48,14 @@ class ReservasiDokumensTable
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('ticketingPemesanan.nama_customer')
+                TextColumn::make('nama_customer')
                     ->label('Pemesan')
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false)
+                    ->toggleable(),
+
+                TextColumn::make('ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pemesan')
                     ->wrap()
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
@@ -72,14 +78,14 @@ class ReservasiDokumensTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('ticketingPemesanan.ticketingPembayaran.nama_pembayar')
+                TextColumn::make('ticketingPembayaran.nama_pembayar')
                     ->label('Pembayar')
                     ->wrap()
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('ticketingPemesanan.ticketingUnitKerja.nama_unit_kerja')
-                    ->label('Unit Kerja')
+                TextColumn::make('ticketingPembayaran.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pembayar')
                     ->wrap()
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),

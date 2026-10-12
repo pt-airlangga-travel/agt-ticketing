@@ -68,6 +68,7 @@ class ReservasiHotelResource extends Resource
                 'ticketingPemesanan.ticketingKategoriPemesanan',
                 'ticketingPemesanan.ticketingUnitKerja',
                 'ticketingPemesanan.ticketingPembayaran',
+                'ticketingPemesanan.ticketingPembayaran.ticketingUnitKerja',
                 'ticketingPemesanan.creator',
                 'ticketingVendor',
                 'ticketingHotel',

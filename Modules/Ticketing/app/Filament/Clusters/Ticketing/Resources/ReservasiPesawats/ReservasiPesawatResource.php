@@ -114,6 +114,7 @@ class ReservasiPesawatResource extends Resource
                 'ticketingPemesanan.ticketingKategoriPemesanan',
                 'ticketingPemesanan.ticketingUnitKerja',
                 'ticketingPemesanan.ticketingPembayaran',
+                'ticketingPemesanan.ticketingPembayaran.ticketingUnitKerja',
                 'ticketingVendor',
                 'ticketingMaskapai',
                 'ticketingBerangkatBandara',

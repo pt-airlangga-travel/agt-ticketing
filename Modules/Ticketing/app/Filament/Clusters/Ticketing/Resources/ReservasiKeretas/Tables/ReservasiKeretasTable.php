@@ -56,6 +56,12 @@ class ReservasiKeretasTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
 
+                TextColumn::make('ticketingPemesanan.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pemesan')
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false)
+                    ->toggleable(),
+
                 TextColumn::make('penumpang_id')
                     ->label('Penumpang ID')
                     ->state(function ($record) {
@@ -80,8 +86,8 @@ class ReservasiKeretasTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('ticketingPemesanan.ticketingUnitKerja.nama_unit_kerja')
-                    ->label('Unit Kerja')
+                TextColumn::make('ticketingPemesanan.ticketingPembayaran.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pembayar')
                     ->wrap()
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),

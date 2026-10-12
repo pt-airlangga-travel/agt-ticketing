@@ -50,6 +50,11 @@ class TicketingPemesanan extends Model
         'created_by',
     ];
 
+    public function getTicketingPemesananAttribute(): self
+    {
+        return $this;
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
