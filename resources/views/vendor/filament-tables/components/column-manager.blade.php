@@ -79,7 +79,10 @@
                 {{ __('filament-tables::table.column_manager.heading') }}
             </{{ $headingTag }}>
 
-            <div class="flex items-center gap-x-3 text-xs">
+            <div
+                class="flex items-center text-xs"
+                style="display: flex; align-items: center; gap: 12px; font-size: 0.8125rem;"
+            >
                 @if ($hasToggleableColumns)
                     <x-filament::link
                         color="gray"
@@ -89,7 +92,7 @@
                         Tampilkan Semua
                     </x-filament::link>
 
-                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                    <span class="text-gray-300 dark:text-gray-600" style="color: rgba(156, 163, 175, 0.6);">|</span>
 
                     <x-filament::link
                         color="gray"
@@ -102,7 +105,7 @@
 
                 @if ($resetActionPosition === ColumnManagerResetActionPosition::Header)
                     @if ($hasToggleableColumns)
-                        <span class="text-gray-300 dark:text-gray-600">|</span>
+                        <span class="text-gray-300 dark:text-gray-600" style="color: rgba(156, 163, 175, 0.6);">|</span>
                     @endif
                     <div>
                         <x-filament::link
@@ -127,9 +130,12 @@
         </div>
 
         @if ($hasToggleableColumns)
-            <div class="my-3 pb-3 border-b border-gray-200 dark:border-white/10">
-                <div class="fi-ta-col-manager-item !pt-0">
-                    <label class="fi-ta-col-manager-label font-medium cursor-pointer">
+            <div
+                class="border-b border-gray-200 dark:border-white/10"
+                style="margin-top: 16px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid rgba(156, 163, 175, 0.25);"
+            >
+                <div class="fi-ta-col-manager-item" style="padding-top: 0 !important;">
+                    <label class="fi-ta-col-manager-label font-medium cursor-pointer" style="display: flex; align-items: center; gap: 10px;">
                         <input
                             type="checkbox"
                             class="fi-checkbox-input fi-valid"
@@ -153,7 +159,10 @@
             {{
                 (new ComponentAttributeBag)
                     ->grid($columns, GridDirection::Column)
-                    ->class(['fi-ta-col-manager-items', '!mt-0 pt-1' => $hasToggleableColumns])
+                    ->class(['fi-ta-col-manager-items'])
+                    ->merge([
+                        'style' => $hasToggleableColumns ? 'margin-top: 0px !important; padding-top: 8px;' : '',
+                    ])
             }}
         >
             <template
