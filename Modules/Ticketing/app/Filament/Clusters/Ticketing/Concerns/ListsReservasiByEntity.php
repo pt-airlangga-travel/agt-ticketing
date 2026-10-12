@@ -72,9 +72,14 @@ trait ListsReservasiByEntity
 
         $query = $this->getTableQueryForExport();
 
-        // Generate dynamic filename based on reservation type and current date
+        // Generate dynamic filename based on reservation type and filtered tanggal_pemesanan
         $reservationType = $this->getReservationTypeSlug();
-        $dateString = now()->format('d/m/Y');
+        
+        // Get date from first record's tanggal_pemesanan (respects filter)
+        $firstRecord = $query->with('ticketingPemesanan')->first();
+        $filterDate = $firstRecord?->ticketingPemesanan?->tanggal_pemesanan ?? now();
+        $dateString = Carbon::parse($filterDate)->format('d/m/Y');
+        
         $filename = sprintf('%s-%s.xlsx', $reservationType, $dateString);
 
         return response()->streamDownload(function () use ($columns, $query): void {
