@@ -233,7 +233,7 @@ class ReservasiPesawatsTable
                     ->toggleable(),
 
                 TextColumn::make('detail_pulang_pergi')
-                    ->label('Detail Pulang Pergi')
+                    ->label('Detail Pulang')
                     ->state(fn ($record) => $record->formatted_detail_pulang_pergi)
                     ->wrap()
                     ->searchable(isIndividual: true, isGlobal: false, query: function ($query, $search) {

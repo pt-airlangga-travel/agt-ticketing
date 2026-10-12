@@ -37,7 +37,7 @@ class TicketingTiketPesawat extends Model
 
     public function getFormattedDetailPulangPergiAttribute(): string
     {
-        if (empty($this->detail_pulang_pergi)) {
+        if (($this->ticketingPemesanan && ! $this->ticketingPemesanan->pulang_pergi) || empty($this->detail_pulang_pergi)) {
             return '-';
         }
 

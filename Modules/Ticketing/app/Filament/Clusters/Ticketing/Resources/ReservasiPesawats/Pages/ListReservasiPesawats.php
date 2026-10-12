@@ -61,7 +61,7 @@ class ListReservasiPesawats extends ListRecords
             'ticketingTibaBandara.nama_bandara' => 'Bandara Tiba',
             'jadwal_berangkat_pesawat' => 'Jadwal Berangkat (Pesawat)',
             'jadwal_tiba_pesawat' => 'Jadwal Tiba (Pesawat)',
-            'detail_pulang_pergi' => 'Detail Pulang Pergi',
+            'detail_pulang_pergi' => 'Detail Pulang',
         ]);
     }
 
