@@ -268,7 +268,9 @@ class PulangPergiKolomTest extends TicketingTestCase
             ->values()
             ->all();
 
-        $this->assertSame(['Garuda'], $values, 'Kolom Maskapai Pulang di Excel harus terisi "Garuda".');
+        $this->assertSame(['Garuda'], $values);
+        // Hasil akhir di Excel: scalar (string), bukan array.
+        $this->assertSame('Garuda', $values ? implode(', ', $values) : '-');
 
         // Untuk nomor penerbangan:
         $values = collect($tiket->pulangPergiSegmens())
@@ -277,6 +279,22 @@ class PulangPergiKolomTest extends TicketingTestCase
             ->values()
             ->all();
         $this->assertSame(['GA-101'], $values);
+        $this->assertSame('GA-101', $values ? implode(', ', $values) : '-');
+
+        // Multi-segmen → digabung koma dalam satu string.
+        $tiketMulti = $this->tiketPesawat([
+            'status_pemesanan_pulang_pergi' => 'Confirmed',
+            'segmen' => [
+                ['maskapai_id' => 1, 'nomor_penerbangan' => 'GA-201', 'bandara_berangkat_id' => 1, 'bandara_tiba_id' => 2],
+                ['maskapai_id' => 1, 'nomor_penerbangan' => 'GA-202', 'bandara_berangkat_id' => 2, 'bandara_tiba_id' => 1],
+            ],
+        ]);
+        $values = collect($tiketMulti->pulangPergiSegmens())
+            ->pluck('nomor_penerbangan')
+            ->filter(fn ($v) => filled($v))
+            ->values()
+            ->all();
+        $this->assertSame('GA-201, GA-202', $values ? implode(', ', $values) : '-');
 
         // Status pulang:
         $this->assertSame('Confirmed', $tiket->pulangPergiStatus() ?? '-');
@@ -288,6 +306,6 @@ class PulangPergiKolomTest extends TicketingTestCase
             ->filter(fn ($v) => filled($v))
             ->values()
             ->all();
-        $this->assertSame([], $values, 'Bukan round-trip → kolom pulang kosong (tampil "-" di Excel).');
+        $this->assertSame('-', $values ? implode(', ', $values) : '-', 'Bukan round-trip → "-" di Excel.');
     }
 }

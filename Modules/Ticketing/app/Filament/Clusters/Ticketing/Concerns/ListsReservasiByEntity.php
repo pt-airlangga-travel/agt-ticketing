@@ -174,7 +174,8 @@ trait ListsReservasiByEntity
             ->values()
             ->all();
 
-        return $values ?: '-';
+        // OpenSpout Row hanya menerima scalar — multi-segmen digabung koma.
+        return $values ? implode(', ', $values) : '-';
     }
 
     protected function getExportFilename(Builder $query): string
