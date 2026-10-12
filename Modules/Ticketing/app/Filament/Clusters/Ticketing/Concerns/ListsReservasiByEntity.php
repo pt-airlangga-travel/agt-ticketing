@@ -72,9 +72,14 @@ trait ListsReservasiByEntity
 
         $query = $this->getTableQueryForExport();
 
+        // Generate dynamic filename based on reservation type and current date
+        $reservationType = $this->getReservationTypeSlug();
+        $dateString = now()->format('d/m/Y');
+        $filename = sprintf('%s-%s.xlsx', $reservationType, $dateString);
+
         return response()->streamDownload(function () use ($columns, $query): void {
             $writer = app(Writer::class);
-            $writer->openToBrowser('reservasi_export.xlsx');
+            $writer->openToBrowser($filename);
 
             $writer->addRow(Row::fromValues($columns->map(fn ($column) => $column->getLabel())->all()));
 
@@ -138,8 +143,34 @@ trait ListsReservasiByEntity
             }
 
             $writer->close();
-        }, 'reservasi_export.xlsx', [
+        }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    /**
+     * Get reservation type slug for filename generation (e.g., reservasi-pesawat)
+     */
+    protected function getReservationTypeSlug(): string
+    {
+        $className = static::class;
+        
+        if (str_contains($className, 'ReservasiPesawats')) {
+            return 'reservasi-pesawat';
+        }
+        
+        if (str_contains($className, 'ReservasiKeretas')) {
+            return 'reservasi-kereta';
+        }
+        
+        if (str_contains($className, 'ReservasiHotels')) {
+            return 'reservasi-hotel';
+        }
+        
+        if (str_contains($className, 'ReservasiDokumens')) {
+            return 'reservasi-dokumen';
+        }
+        
+        return 'reservasi-export';
     }
 }
