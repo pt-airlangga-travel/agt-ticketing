@@ -5,6 +5,7 @@ namespace Modules\Ticketing\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Modules\Ticketing\Models\TicketingBandara;
 use Modules\Ticketing\Models\TicketingPemesanan;
 
 class PrintInvoiceController extends Controller
@@ -37,14 +38,21 @@ class PrintInvoiceController extends Controller
 
         if ($pemesanan->pulang_pergi == 1) {
             $detail = json_decode((string) $tiket->detail_pulang_pergi, true) ?: [];
+            $firstSegmen = $detail['segmen'][0] ?? null;
 
-            $bandaraBerangkatPulang = $tiket->ticketingBerangkatBandara::find($detail['bandara_berangkat_id_pulang'] ?? null);
-            $bandaraTibaPulang = $tiket->ticketingTibaBandara::find($detail['bandara_tiba_id_pulang'] ?? null);
+            $bandaraBerangkatId = $detail['bandara_berangkat_id_pulang'] ?? ($firstSegmen['bandara_berangkat_id'] ?? null);
+            $bandaraTibaId = $detail['bandara_tiba_id_pulang'] ?? ($firstSegmen['bandara_tiba_id'] ?? null);
+
+            $bandaraBerangkatPulang = $bandaraBerangkatId ? TicketingBandara::find($bandaraBerangkatId) : null;
+            $bandaraTibaPulang = $bandaraTibaId ? TicketingBandara::find($bandaraTibaId) : null;
 
             $rutePulang = ($bandaraBerangkatPulang?->kode_bandara ?? '-').' - '.($bandaraTibaPulang?->kode_bandara ?? '-');
-            $nomerPenerbanganPulang = $detail['nomor_penerbangan_pulang'] ?? '';
-            $kodeBookingPulang = $detail['kode_booking_pesawat_pulang'] ?? '';
-            $jadwalBerangkatPulang = ($detail['tanggal_keberangkatan_pulang'] ?? '').' '.($detail['jam_keberangkatan_pulang'] ?? '');
+            $nomerPenerbanganPulang = $detail['nomor_penerbangan_pulang'] ?? ($firstSegmen['nomor_penerbangan'] ?? '');
+            $kodeBookingPulang = $detail['kode_booking_pesawat_pulang'] ?? ($firstSegmen['kode_booking_pesawat'] ?? '');
+            $jadwalBerangkatPulang = trim(($detail['tanggal_keberangkatan_pulang'] ?? '').' '.($detail['jam_keberangkatan_pulang'] ?? ''));
+            if ($jadwalBerangkatPulang === '' && ! empty($firstSegmen['jadwal_berangkat_pesawat'])) {
+                $jadwalBerangkatPulang = $firstSegmen['jadwal_berangkat_pesawat'];
+            }
         }
 
         return $this->streamInvoice('pesawat', $pemesanan, [

@@ -2,6 +2,7 @@
 
 namespace Modules\Ticketing\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Ticketing\Models\TicketingPembayaran;
@@ -147,10 +148,45 @@ class ReservasiPesawatService extends ReservasiService
             return null;
         }
 
-        return json_encode([
+        $payload = [
             'status_pemesanan_pulang_pergi' => $data['status_pemesanan_pulang_pergi'] ?? null,
             'segmen' => $segmenPulang,
-        ]);
+        ];
+
+        // Maintain legacy keys for backward compatibility (e.g. print invoice, external systems)
+        $first = $segmenPulang[0] ?? [];
+        $tglPulang = null;
+        $jamPulang = null;
+        if (! empty($first['jadwal_berangkat_pesawat'])) {
+            try {
+                $dt = Carbon::parse($first['jadwal_berangkat_pesawat']);
+                $tglPulang = $dt->format('Y-m-d');
+                $jamPulang = $dt->format('H:i');
+            } catch (\Throwable $e) {
+            }
+        }
+
+        $jamTiba = null;
+        if (! empty($first['jadwal_tiba_pesawat'])) {
+            try {
+                $jamTiba = Carbon::parse($first['jadwal_tiba_pesawat'])->format('H:i');
+            } catch (\Throwable $e) {
+            }
+        }
+
+        $payload['maskapai_id_pulang'] = $first['maskapai_id'] ?? null;
+        $payload['nomor_ticket_pulang'] = $first['nomor_ticket'] ?? null;
+        $payload['nomor_penerbangan_pulang'] = $first['nomor_penerbangan'] ?? null;
+        $payload['kode_booking_pesawat_pulang'] = $first['kode_booking_pesawat'] ?? null;
+        $payload['bandara_berangkat_id_pulang'] = $first['bandara_berangkat_id'] ?? null;
+        $payload['bandara_tiba_id_pulang'] = $first['bandara_tiba_id'] ?? null;
+        $payload['tanggal_keberangkatan_pulang'] = $tglPulang;
+        $payload['jam_keberangkatan_pulang'] = $jamPulang;
+        $payload['jam_tiba_pulang'] = $jamTiba;
+        $payload['kelas_pulang'] = $first['kelas'] ?? null;
+        $payload['vendor_id_pulang'] = $first['vendor_id'] ?? null;
+
+        return json_encode($payload);
     }
 
     /**

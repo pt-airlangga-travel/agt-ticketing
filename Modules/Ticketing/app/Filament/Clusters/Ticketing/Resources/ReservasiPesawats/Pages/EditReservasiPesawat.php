@@ -59,14 +59,58 @@ class EditReservasiPesawat extends EditRecord
             $data['zona_waktu_kedatangan'] = $tiket->zona_waktu_kedatangan;
 
             $detailPulangPergi = json_decode((string) $tiket->detail_pulang_pergi, true) ?: [];
-            if (isset($detailPulangPergi['segmen']) && is_array($detailPulangPergi['segmen'])) {
-                $data['status_pemesanan_pulang_pergi'] = $detailPulangPergi['status_pemesanan_pulang_pergi'] ?? null;
-                $data['detail_pulang_pergi'] = ['segmen' => $detailPulangPergi['segmen']];
-            } else {
-                $data['detail_pulang_pergi'] = ['segmen' => $detailPulangPergi];
-            }
+            $data['status_pemesanan_pulang_pergi'] = $detailPulangPergi['status_pemesanan_pulang_pergi'] ?? null;
+            $data['detail_pulang_pergi'] = ['segmen' => $this->normalizeSegmenPulang($detailPulangPergi)];
         }
 
         return $data;
+    }
+
+    private function normalizeSegmenPulang(array $detail): array
+    {
+        if (empty($detail)) {
+            return [];
+        }
+
+        if (isset($detail['segmen']) && is_array($detail['segmen'])) {
+            return array_values($detail['segmen']);
+        }
+
+        if (array_is_list($detail) && isset($detail[0]) && is_array($detail[0])) {
+            return $detail;
+        }
+
+        if (isset($detail['maskapai_id_pulang']) || isset($detail['nomor_ticket_pulang']) || isset($detail['kode_booking_pesawat_pulang'])) {
+            $jadwalBerangkat = null;
+            if (! empty($detail['tanggal_keberangkatan_pulang'])) {
+                $jam = ! empty($detail['jam_keberangkatan_pulang']) ? $detail['jam_keberangkatan_pulang'] : '00:00';
+                $jadwalBerangkat = trim($detail['tanggal_keberangkatan_pulang'] . ' ' . $jam);
+            }
+
+            $jadwalTiba = null;
+            $tglTiba = $detail['tanggal_tiba_pulang'] ?? ($detail['tanggal_keberangkatan_pulang'] ?? null);
+            if (! empty($tglTiba)) {
+                $jam = ! empty($detail['jam_tiba_pulang']) ? $detail['jam_tiba_pulang'] : '00:00';
+                $jadwalTiba = trim($tglTiba . ' ' . $jam);
+            }
+
+            return [
+                [
+                    'maskapai_id' => $detail['maskapai_id_pulang'] ?? null,
+                    'nomor_ticket' => $detail['nomor_ticket_pulang'] ?? null,
+                    'nomor_penerbangan' => $detail['nomor_penerbangan_pulang'] ?? null,
+                    'kode_booking_pesawat' => $detail['kode_booking_pesawat_pulang'] ?? null,
+                    'bandara_berangkat_id' => $detail['bandara_berangkat_id_pulang'] ?? null,
+                    'jadwal_berangkat_pesawat' => $jadwalBerangkat,
+                    'bandara_tiba_id' => $detail['bandara_tiba_id_pulang'] ?? null,
+                    'jadwal_tiba_pesawat' => $jadwalTiba,
+                    'kelas' => $detail['kelas_pulang'] ?? null,
+                    'jenis_penerbangan' => $detail['jenis_penerbangan_pulang'] ?? 'Domestik',
+                    'vendor_id' => $detail['vendor_id_pulang'] ?? null,
+                ],
+            ];
+        }
+
+        return [];
     }
 }
