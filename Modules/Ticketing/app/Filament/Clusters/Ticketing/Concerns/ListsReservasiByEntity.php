@@ -111,6 +111,8 @@ trait ListsReservasiByEntity
                             if ($penumpang === null) {
                                 $value = data_get($record, $name) ?? $value;
                             }
+                        } elseif ($name === 'detail_pulang_pergi') {
+                            $value = $record->formatted_detail_pulang_pergi ?? '-';
                         } else {
                             $value = data_get($record, $name);
                         }
@@ -119,7 +121,7 @@ trait ListsReservasiByEntity
                             $value = $value ? 'Ya' : 'Tidak';
                         }
 
-                        if (str_ends_with($name, 'pulang_pergi')) {
+                        if (str_ends_with($name, 'pulang_pergi') && !str_contains($name, 'detail')) {
                             $value = $value ? 'Ya' : 'Tidak';
                         }
 

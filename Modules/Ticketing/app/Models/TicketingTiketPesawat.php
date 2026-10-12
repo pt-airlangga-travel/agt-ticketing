@@ -2,6 +2,7 @@
 
 namespace Modules\Ticketing\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -29,6 +30,118 @@ class TicketingTiketPesawat extends Model
                 }
             }
         });
+    }
+
+    protected static array $maskapaiCache = [];
+    protected static array $bandaraCache = [];
+
+    public function getFormattedDetailPulangPergiAttribute(): string
+    {
+        if (empty($this->detail_pulang_pergi)) {
+            return '-';
+        }
+
+        $detail = json_decode((string) $this->detail_pulang_pergi, true);
+        if (! is_array($detail) || empty($detail)) {
+            return '-';
+        }
+
+        $segmens = [];
+        if (isset($detail['segmen']) && is_array($detail['segmen']) && ! empty($detail['segmen'])) {
+            $segmens = $detail['segmen'];
+        } else {
+            $segmens = [$detail];
+        }
+
+        $status = $detail['status_pemesanan_pulang_pergi'] ?? null;
+        $formattedSegmens = [];
+
+        foreach ($segmens as $idx => $seg) {
+            $maskapaiId = $seg['maskapai_id'] ?? ($seg['maskapai_id_pulang'] ?? null);
+            $maskapai = null;
+            if ($maskapaiId) {
+                if (! array_key_exists($maskapaiId, static::$maskapaiCache)) {
+                    static::$maskapaiCache[$maskapaiId] = TicketingMaskapai::find($maskapaiId)?->nama_maskapai;
+                }
+                $maskapai = static::$maskapaiCache[$maskapaiId];
+            }
+
+            $nomorPenerbangan = $seg['nomor_penerbangan'] ?? ($seg['nomor_penerbangan_pulang'] ?? null);
+            $nomorTiket = $seg['nomor_ticket'] ?? ($seg['nomor_ticket_pulang'] ?? null);
+            $kodeBooking = $seg['kode_booking_pesawat'] ?? ($seg['kode_booking_pesawat_pulang'] ?? null);
+            $kelas = $seg['kelas'] ?? ($seg['kelas_pulang'] ?? null);
+
+            $asalId = $seg['bandara_berangkat_id'] ?? ($seg['bandara_berangkat_id_pulang'] ?? null);
+            $asal = null;
+            if ($asalId) {
+                if (! array_key_exists($asalId, static::$bandaraCache)) {
+                    static::$bandaraCache[$asalId] = TicketingBandara::find($asalId)?->kode_bandara;
+                }
+                $asal = static::$bandaraCache[$asalId];
+            }
+
+            $tujuanId = $seg['bandara_tiba_id'] ?? ($seg['bandara_tiba_id_pulang'] ?? null);
+            $tujuan = null;
+            if ($tujuanId) {
+                if (! array_key_exists($tujuanId, static::$bandaraCache)) {
+                    static::$bandaraCache[$tujuanId] = TicketingBandara::find($tujuanId)?->kode_bandara;
+                }
+                $tujuan = static::$bandaraCache[$tujuanId];
+            }
+
+            $rute = ($asal && $tujuan) ? "{$asal} - {$tujuan}" : ($asal ?: $tujuan);
+
+            $jadwalBerangkat = $seg['jadwal_berangkat_pesawat'] ?? null;
+            if (! $jadwalBerangkat && ! empty($seg['tanggal_keberangkatan_pulang'])) {
+                $jam = $seg['jam_keberangkatan_pulang'] ?? '';
+                $jadwalBerangkat = trim("{$seg['tanggal_keberangkatan_pulang']} {$jam}");
+            }
+            if ($jadwalBerangkat) {
+                try {
+                    $jadwalBerangkat = Carbon::parse($jadwalBerangkat)->format('d M Y H:i');
+                } catch (\Throwable $e) {
+                }
+            }
+
+            $jadwalTiba = $seg['jadwal_tiba_pesawat'] ?? null;
+            if (! $jadwalTiba && (! empty($seg['tanggal_tiba_pulang']) || ! empty($seg['jam_tiba_pulang']))) {
+                $tgl = $seg['tanggal_tiba_pulang'] ?? ($seg['tanggal_keberangkatan_pulang'] ?? '');
+                $jam = $seg['jam_tiba_pulang'] ?? '';
+                $jadwalTiba = trim("{$tgl} {$jam}");
+            }
+            if ($jadwalTiba) {
+                try {
+                    $jadwalTiba = Carbon::parse($jadwalTiba)->format('d M Y H:i');
+                } catch (\Throwable $e) {
+                }
+            }
+
+            $parts = [];
+            if ($maskapai) $parts[] = $maskapai;
+            if ($nomorPenerbangan) $parts[] = $nomorPenerbangan;
+            if ($rute) $parts[] = "({$rute})";
+            if ($jadwalBerangkat) $parts[] = "Berangkat: {$jadwalBerangkat}";
+            if ($jadwalTiba) $parts[] = "Tiba: {$jadwalTiba}";
+            if ($nomorTiket) $parts[] = "Tiket: {$nomorTiket}";
+            if ($kodeBooking) $parts[] = "Kode Booking: {$kodeBooking}";
+            if ($kelas) $parts[] = "Kelas: {$kelas}";
+
+            if (! empty($parts)) {
+                $prefix = count($segmens) > 1 ? 'Segmen ' . ($idx + 1) . ': ' : '';
+                $formattedSegmens[] = $prefix . implode(' | ', $parts);
+            }
+        }
+
+        if (empty($formattedSegmens)) {
+            return '-';
+        }
+
+        $res = implode('; ', $formattedSegmens);
+        if ($status) {
+            $res .= " [Status: {$status}]";
+        }
+
+        return $res;
     }
 
     public function save(array $options = []): bool

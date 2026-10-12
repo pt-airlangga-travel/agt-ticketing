@@ -232,11 +232,14 @@ class ReservasiPesawatsTable
                     ->sortable()
                     ->toggleable(),
 
-                // TextColumn::make('detail_pulang_pergi')
-                //     ->label('Detail Pulang Pergi')
-                //     ->searchable(isIndividual: true, isGlobal: false)
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('detail_pulang_pergi')
+                    ->label('Detail Pulang Pergi')
+                    ->state(fn ($record) => $record->formatted_detail_pulang_pergi)
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false, query: function ($query, $search) {
+                        $query->where('detail_pulang_pergi', 'like', "%{$search}%");
+                    })
+                    ->toggleable(),
 
                 TextColumn::make('ticketingBerangkatBandara.kode_bandara')
                     ->label('Kode Bandara Berangkat')
