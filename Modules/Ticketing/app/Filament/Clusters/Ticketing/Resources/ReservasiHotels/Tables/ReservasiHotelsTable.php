@@ -23,6 +23,7 @@ class ReservasiHotelsTable
         return $table
             ->striped()
             ->recordAction(null)
+            ->recordUrl(null)
             ->defaultSort('ticketing_kamar_hotel.created_at', 'desc')
             ->searchable(false)
             ->filtersLayout(FiltersLayout::AboveContent)
@@ -38,10 +39,11 @@ class ReservasiHotelsTable
                         $tanggal = $record->ticketingPemesanan?->tanggal_pemesanan
                             ? Carbon::parse($record->ticketingPemesanan->tanggal_pemesanan)->format('d M Y')
                             : null;
+                        $editUrl = ReservasiHotelResource::getUrl('edit', ['record' => $record->ticketingPemesanan]);
 
                         return new HtmlString(<<<HTML
                             <div class="leading-tight">
-                                <div class="font-semibold text-gray-800 dark:text-white">{$invoice}</div>
+                                <a href="{$editUrl}" class="font-semibold text-primary-600 dark:text-primary-400 hover:underline">{$invoice}</a>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{$tanggal}</div>
                             </div>
                         HTML);
@@ -62,11 +64,17 @@ class ReservasiHotelsTable
                     ->searchable(isIndividual: true, isGlobal: false)
                     ->toggleable(),
 
+                TextColumn::make('ticketingPemesanan.ticketingUnitKerja.nama_unit_kerja')
+                    ->label('Unit Kerja Pemesan')
+                    ->wrap()
+                    ->searchable(isIndividual: true, isGlobal: false)
+                    ->toggleable(),
+
                 TextColumn::make('penumpang_id')
                     ->label('Penumpang ID')
                     ->state(function ($record) {
                         $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
-                        return collect($record->ticketingPenumpang)->values()->map(function ($p, $index) use ($invoice) {
+                        return collect($record->ticketingPenumpang)->sortBy('id')->values()->map(function ($p, $index) use ($invoice) {
                             return $invoice . '-' . ($index + 1);
                         })->all();
                     })
@@ -75,21 +83,58 @@ class ReservasiHotelsTable
 
                 TextColumn::make('ticketingPenumpang.nama_penumpang')
                     ->label('Penumpang')
-                    ->badge()
+                    ->state(function ($record) {
+                        return collect($record->ticketingPenumpang)->sortBy('id')->pluck('nama_penumpang')->values()->all();
+                    })
                     ->listWithLineBreaks()
                     ->searchable(isIndividual: true, isGlobal: false)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
 
-                TextColumn::make('ticketingPemesanan.ticketingPembayaran.nama_pembayar')
+                TextColumn::make('pembayar_per_penumpang')
                     ->label('Pembayar')
-                    ->wrap()
-                    ->searchable(isIndividual: true, isGlobal: false)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->state(function ($record) {
+                        $items = collect();
 
-                TextColumn::make('ticketingPemesanan.ticketingPembayaran.ticketingUnitKerja.nama_unit_kerja')
+                        foreach (collect($record->ticketingPenumpang ?? [])->sortBy('id') as $penumpang) {
+                            $bayar = ($penumpang->ticketingPembayaranPenumpang ?? collect())->first();
+                            $nama = $bayar?->ticketingPembayar?->nama_pembayar
+                                ?? $bayar?->nama_pembayar
+                                ?? '-';
+                            $unit = $bayar?->ticketingUnitKerja?->nama_unit_kerja;
+
+                            $items->push($unit ? "{$nama} ({$unit})" : $nama);
+                        }
+
+                        return $items->all();
+                    })
+                    ->searchable(isIndividual: true, isGlobal: false, query: function ($query, $search) {
+                        $query->whereHas('ticketingPenumpang.ticketingPembayaranPenumpang', function ($query) use ($search) {
+                            $query->where(function ($query) use ($search) {
+                                $query->whereHas('ticketingPembayar', function ($query) use ($search) {
+                                    $query->where('nama_pembayar', 'like', "%{$search}%");
+                                })->orWhere('nama_pembayar', 'like', "%{$search}%");
+                            });
+                        });
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
+
+                TextColumn::make('unit_kerja_pembayar_per_penumpang')
                     ->label('Unit Kerja Pembayar')
-                    ->wrap()
-                    ->searchable(isIndividual: true, isGlobal: false)
+                    ->state(function ($record) {
+                        $items = collect();
+
+                        foreach (collect($record->ticketingPenumpang ?? [])->sortBy('id') as $penumpang) {
+                            $bayar = ($penumpang->ticketingPembayaranPenumpang ?? collect())->first();
+                            $unit = $bayar?->ticketingUnitKerja?->nama_unit_kerja
+                                ?? $bayar?->ticketingPembayar?->ticketingUnitKerja?->nama_unit_kerja
+                                ?? '-';
+                            $items->push($unit);
+                        }
+
+                        return $items->all();
+                    })
+                    ->listWithLineBreaks()
                     ->toggleable(),
 
                 TextColumn::make('ticketingHotel.nama_hotel')
@@ -136,11 +181,97 @@ class ReservasiHotelsTable
                     })
                     ->sortable(),
 
-                TextColumn::make('ticketingPemesanan.harga_jual')
+                TextColumn::make('harga_jual_per_penumpang')
                     ->label('Harga Jual')
-                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->state(function ($record) {
+                        $totalHarga = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
+                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
+                        $count = $penumpangs->count();
+
+                        if ($count <= 1) {
+                            return ['Rp ' . number_format($totalHarga, 0, ',', '.')];
+                        }
+
+                        $base = intdiv($totalHarga, $count);
+                        $remainder = $totalHarga % $count;
+
+                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
+                            $harga = $base + ($index < $remainder ? 1 : 0);
+                            return 'Rp ' . number_format($harga, 0, ',', '.');
+                        })->all();
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
+
+                TextColumn::make('harga_beli_per_penumpang')
+                    ->label('Harga NTA (HPP)')
+                    ->state(function ($record) {
+                        $totalHpp = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
+                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
+                        $count = $penumpangs->count();
+
+                        if ($count <= 1) {
+                            return ['Rp ' . number_format($totalHpp, 0, ',', '.')];
+                        }
+
+                        $base = intdiv($totalHpp, $count);
+                        $remainder = $totalHpp % $count;
+
+                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
+                            $harga = $base + ($index < $remainder ? 1 : 0);
+                            return 'Rp ' . number_format($harga, 0, ',', '.');
+                        })->all();
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
+
+                TextColumn::make('harga_publish_per_penumpang')
+                    ->label('Komisi (Publish)')
+                    ->state(function ($record) {
+                        $totalPublish = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
+                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
+                        $count = $penumpangs->count();
+
+                        if ($count <= 1) {
+                            return ['Rp ' . number_format($totalPublish, 0, ',', '.')];
+                        }
+
+                        $base = intdiv($totalPublish, $count);
+                        $remainder = $totalPublish % $count;
+
+                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
+                            $harga = $base + ($index < $remainder ? 1 : 0);
+                            return 'Rp ' . number_format($harga, 0, ',', '.');
+                        })->all();
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
+
+                TextColumn::make('profit_per_penumpang')
+                    ->label('Profit')
+                    ->state(function ($record) {
+                        $totalJual = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
+                        $totalHpp = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
+                        $totalPublish = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
+                        $totalProfit = $totalJual - $totalHpp - $totalPublish;
+
+                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
+                        $count = $penumpangs->count();
+
+                        if ($count <= 1) {
+                            return [($totalProfit < 0 ? '-Rp ' : 'Rp ') . number_format(abs($totalProfit), 0, ',', '.')];
+                        }
+
+                        $base = intdiv($totalProfit, $count);
+                        $remainder = $totalProfit % $count;
+
+                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
+                            $profit = $base + ($index < $remainder ? 1 : 0);
+                            return ($profit < 0 ? '-Rp ' : 'Rp ') . number_format(abs($profit), 0, ',', '.');
+                        })->all();
+                    })
+                    ->listWithLineBreaks()
+                    ->toggleable(),
 
                 TextColumn::make('ticketingPemesanan.status_pemesanan')
                     ->label('Status')
