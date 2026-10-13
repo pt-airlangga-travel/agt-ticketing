@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd /home/u122950122/domains/airlanggatravel.com/public_html/inticket
+            cd /home/u122950122/domains/airlanggatravel.my.id/public_html/v2/
 
             echo "Menarik kode terbaru dari branch main..."
             git pull origin main
