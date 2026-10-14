@@ -182,7 +182,7 @@ class ReservasiHotelsTable
                     ->sortable(),
 
                 TextColumn::make('harga_jual_per_penumpang')
-                    ->label('Harga Jual')
+                    ->label('Harga Jual per Pax')
                     ->state(function ($record) {
                         $totalHarga = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
                         $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
@@ -203,74 +203,22 @@ class ReservasiHotelsTable
                     ->listWithLineBreaks()
                     ->toggleable(),
 
-                TextColumn::make('harga_beli_per_penumpang')
+                TextColumn::make('ticketingPemesanan.harga_jual')
+                    ->label('Harga Jual Invoice')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('ticketingPemesanan.harga_beli')
                     ->label('Harga NTA (HPP)')
-                    ->state(function ($record) {
-                        $totalHpp = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
-                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
-                        $count = $penumpangs->count();
-
-                        if ($count <= 1) {
-                            return ['Rp ' . number_format($totalHpp, 0, ',', '.')];
-                        }
-
-                        $base = intdiv($totalHpp, $count);
-                        $remainder = $totalHpp % $count;
-
-                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
-                            $harga = $base + ($index < $remainder ? 1 : 0);
-                            return 'Rp ' . number_format($harga, 0, ',', '.');
-                        })->all();
-                    })
-                    ->listWithLineBreaks()
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('harga_publish_per_penumpang')
-                    ->label('Komisi (Publish)')
-                    ->state(function ($record) {
-                        $totalPublish = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
-                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
-                        $count = $penumpangs->count();
-
-                        if ($count <= 1) {
-                            return ['Rp ' . number_format($totalPublish, 0, ',', '.')];
-                        }
-
-                        $base = intdiv($totalPublish, $count);
-                        $remainder = $totalPublish % $count;
-
-                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
-                            $harga = $base + ($index < $remainder ? 1 : 0);
-                            return 'Rp ' . number_format($harga, 0, ',', '.');
-                        })->all();
-                    })
-                    ->listWithLineBreaks()
-                    ->toggleable(),
-
-                TextColumn::make('profit_per_penumpang')
-                    ->label('Profit')
-                    ->state(function ($record) {
-                        $totalJual = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
-                        $totalHpp = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
-                        $totalPublish = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
-                        $totalProfit = $totalJual - $totalHpp - $totalPublish;
-
-                        $penumpangs = collect($record->ticketingPenumpang ?? [])->sortBy('id');
-                        $count = $penumpangs->count();
-
-                        if ($count <= 1) {
-                            return [($totalProfit < 0 ? '-Rp ' : 'Rp ') . number_format(abs($totalProfit), 0, ',', '.')];
-                        }
-
-                        $base = intdiv($totalProfit, $count);
-                        $remainder = $totalProfit % $count;
-
-                        return $penumpangs->values()->map(function ($p, $index) use ($base, $remainder) {
-                            $profit = $base + ($index < $remainder ? 1 : 0);
-                            return ($profit < 0 ? '-Rp ' : 'Rp ') . number_format(abs($profit), 0, ',', '.');
-                        })->all();
-                    })
-                    ->listWithLineBreaks()
+                TextColumn::make('ticketingPemesanan.harga_publish')
+                    ->label('Komisi')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('ticketingPemesanan.status_pemesanan')

@@ -132,7 +132,7 @@ class ReservasiDokumensTable
                     ->toggleable(),
 
                 TextColumn::make('harga_jual_per_pemilik')
-                    ->label('Harga Jual')
+                    ->label('Harga Jual per Pax')
                     ->state(function ($record) {
                         $totalHarga = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
                         $pemiliks = collect($record->pemilikDokumen ?? [])->sortBy('id');
@@ -153,48 +153,22 @@ class ReservasiDokumensTable
                     ->listWithLineBreaks()
                     ->toggleable(),
 
-                TextColumn::make('harga_beli_per_pemilik')
-                    ->label('Harga NTA (HPP)')
-                    ->state(function ($record) {
-                        $totalHpp = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
-                        $pemiliks = collect($record->pemilikDokumen ?? [])->sortBy('id');
-                        $count = $pemiliks->count();
-
-                        if ($count <= 1) {
-                            return ['Rp ' . number_format($totalHpp, 0, ',', '.')];
-                        }
-
-                        $base = intdiv($totalHpp, $count);
-                        $remainder = $totalHpp % $count;
-
-                        return $pemiliks->values()->map(function ($p, $index) use ($base, $remainder) {
-                            $harga = $base + ($index < $remainder ? 1 : 0);
-                            return 'Rp ' . number_format($harga, 0, ',', '.');
-                        })->all();
-                    })
-                    ->listWithLineBreaks()
+                TextColumn::make('ticketingPemesanan.harga_jual')
+                    ->label('Harga Jual Invoice')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('harga_publish_per_pemilik')
-                    ->label('Komisi (Publish)')
-                    ->state(function ($record) {
-                        $totalPublish = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
-                        $pemiliks = collect($record->pemilikDokumen ?? [])->sortBy('id');
-                        $count = $pemiliks->count();
+                TextColumn::make('ticketingPemesanan.harga_beli')
+                    ->label('Harga NTA (HPP)')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
+                    ->toggleable(),
 
-                        if ($count <= 1) {
-                            return ['Rp ' . number_format($totalPublish, 0, ',', '.')];
-                        }
-
-                        $base = intdiv($totalPublish, $count);
-                        $remainder = $totalPublish % $count;
-
-                        return $pemiliks->values()->map(function ($p, $index) use ($base, $remainder) {
-                            $harga = $base + ($index < $remainder ? 1 : 0);
-                            return 'Rp ' . number_format($harga, 0, ',', '.');
-                        })->all();
-                    })
-                    ->listWithLineBreaks()
+                TextColumn::make('ticketingPemesanan.harga_publish')
+                    ->label('Komisi')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('ticketingPemesanan.status_pemesanan')

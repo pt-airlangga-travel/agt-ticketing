@@ -162,6 +162,7 @@ class ReservasiFormPartials
 
                 TextInput::make('harga_jual')
                     ->label('Harga Jual')
+                    ->helperText('Harga total per invoice (untuk seluruh penumpang)')
                     ->mask(RawJs::make('$money($input)'))
                     ->stripCharacters('.')
                     ->dehydrateStateUsing(fn ($state) => (int) self::parseRupiah($state))

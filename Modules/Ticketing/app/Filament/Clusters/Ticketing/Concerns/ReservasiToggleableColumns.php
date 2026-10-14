@@ -31,9 +31,24 @@ trait ReservasiToggleableColumns
                 ->toggleable(isToggledHiddenByDefault: true),
 
             TextColumn::make('ticketingPemesanan.harga_publish')
-                ->label('Harga Publish')
+                ->label('Komisi')
                 ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
                 ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+
+            TextColumn::make('profit_invoice')
+                ->label('Profit')
+                ->state(function ($record) {
+                    $jual = (int) ($record->ticketingPemesanan?->harga_jual ?? 0);
+                    $beli = (int) ($record->ticketingPemesanan?->harga_beli ?? 0);
+                    $komisi = (int) ($record->ticketingPemesanan?->harga_publish ?? 0);
+                    $profit = $jual - $beli - $komisi;
+
+                    return ($profit < 0 ? '-Rp ' : 'Rp ') . number_format(abs($profit), 0, ',', '.');
+                })
+                ->sortable(query: function ($query, string $direction) {
+                    return $query->orderByRaw('(harga_jual - harga_beli - harga_publish) ' . $direction);
+                })
                 ->toggleable(isToggledHiddenByDefault: true),
 
             $searchable(TextColumn::make('ticketingVendor.nama_vendor'))

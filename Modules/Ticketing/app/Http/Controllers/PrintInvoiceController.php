@@ -31,8 +31,9 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice, $pemesanan->ticketingPembayaran?->id);
 
-        $hargaSatuan = $pemesanan->harga_jual;
-        $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
+        $totalPenumpangPemesanan = $pemesanan->ticketingPenumpang()->count() ?: 1;
+        $hargaSatuan = (int) round($pemesanan->harga_jual / max(1, $totalPenumpangPemesanan));
+        $hargaTotal = (int) $pemesanan->harga_jual;
 
         $rutePulang = $nomerPenerbanganPulang = $kodeBookingPulang = $jadwalBerangkatPulang = '';
 
@@ -89,8 +90,9 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($tiket->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
-        $hargaSatuan = $pemesanan->harga_jual;
-        $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
+        $totalPenumpangPemesanan = $pemesanan->ticketingPenumpang()->count() ?: 1;
+        $hargaSatuan = (int) round($pemesanan->harga_jual / max(1, $totalPenumpangPemesanan));
+        $hargaTotal = (int) $pemesanan->harga_jual;
 
         return $this->streamInvoice('kereta', $pemesanan, [
             'kode_booking' => $tiket->kode_booking_kereta,
@@ -120,8 +122,9 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($kamarHotel->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
-        $hargaSatuan = $pemesanan->harga_jual;
-        $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
+        $totalPenumpangPemesanan = $pemesanan->ticketingPenumpang()->count() ?: 1;
+        $hargaSatuan = (int) round($pemesanan->harga_jual / max(1, $totalPenumpangPemesanan));
+        $hargaTotal = (int) $pemesanan->harga_jual;
 
         return $this->streamInvoice('hotel', $pemesanan, [
             'nama_hotel' => $kamarHotel->ticketingHotel->nama_hotel,
@@ -152,8 +155,9 @@ class PrintInvoiceController extends Controller
 
         $penumpangTerpilih = $this->resolusiPenumpang($dokumen->ticketingPenumpang, explode(',', $request->id_penumpang), $pemesanan->invoice);
 
-        $hargaSatuan = $pemesanan->harga_jual;
-        $hargaTotal = $hargaSatuan * count($penumpangTerpilih);
+        $totalPenumpangPemesanan = $pemesanan->ticketingPenumpang()->count() ?: 1;
+        $hargaSatuan = (int) round($pemesanan->harga_jual / max(1, $totalPenumpangPemesanan));
+        $hargaTotal = (int) $pemesanan->harga_jual;
 
         return $this->streamInvoice('dokumen', $pemesanan, [
             'jenis_dokumen' => $dokumen->jenis_dokumen,
