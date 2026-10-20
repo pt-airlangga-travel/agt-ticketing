@@ -16,7 +16,7 @@ class ListTicketingPelanggans extends ListRecords
             CreateAction::make()
                 ->label('+ Tambah')
                 ->createAnother(false)
-                ->modalHeading('Tambah Nama Pelanggan'),
+                ->modalHeading('Tambah Nama Pemesan'),
         ];
     }
 }

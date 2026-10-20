@@ -9,10 +9,13 @@ use Modules\Ticketing\Models\TicketingPenumpang;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\HasPrintInvoiceBulkAction;
 
 class PemilikDokumenRelationManager extends RelationManager
@@ -61,6 +64,33 @@ class PemilikDokumenRelationManager extends RelationManager
                 TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->formatStateUsing(fn (int $state): string => $state ? 'Perempuan' : 'Laki-laki'),
+
+                IconColumn::make('lunas')
+                    ->label('Lunas')
+                    ->alignCenter()
+                    ->boolean()
+                    ->state(function (Model $record, $livewire): bool {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+
+                        return (bool) ($pemesanan?->isPenumpangLunas($record->id) ?? false);
+                    })
+                    ->action(function (Model $record, $livewire): void {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+                        if ($pemesanan) {
+                            $isLunas = $pemesanan->isPenumpangLunas($record->id);
+                            $pemesanan->setPenumpangLunas($record->id, ! $isLunas);
+                            Notification::make()
+                                ->title((! $isLunas) ? "Pemilik {$record->nama_penumpang} ditandai lunas" : "Status lunas {$record->nama_penumpang} dibatalkan")
+                                ->success()
+                                ->send();
+                        }
+                    })
+                    ->tooltip(function (Model $record, $livewire): string {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+                        $isLunas = (bool) ($pemesanan?->isPenumpangLunas($record->id) ?? false);
+
+                        return $isLunas ? 'Lunas (klik untuk batalkan)' : 'Belum Lunas (klik untuk tandai lunas)';
+                    }),
             ])
             ->headerActions([
                 Action::make('tambah_pemilik_dokumen')

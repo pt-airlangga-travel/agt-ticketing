@@ -16,18 +16,19 @@ class ReservasiPesawatService extends ReservasiService
         return DB::transaction(function () use ($data) {
             $segmenPulang = $this->segmenPulang($data['detail_pulang_pergi']['segmen'] ?? []);
 
-            $pemesanan = TicketingPemesanan::create([
+            $pemesanan = TicketingPemesanan::create($this->filterPemesananColumns([
                 'invoice' => $this->generateInvoiceNumber('1'),
                 'nama_customer' => $data['nama_customer'] ?? null,
                 'tckt_kategori_pemesanan_id' => $data['kategori_pemesanan_id'] ?? null,
                 'tckt_unit_kerja_id' => $data['unit_kerja_pemesan'] ?? null,
                 'status_pemesanan' => $data['status_pemesanan'] ?? null,
+                'lunas' => (bool) ($data['lunas'] ?? false),
                 'pulang_pergi' => (int) ($data['pulang_pergi'] ?? 0),
                 'tanggal_pemesanan' => $this->toDate($data['tanggal_pemesanan'] ?? null),
                 'harga_beli' => $this->toInteger($data['harga_beli'] ?? null),
                 'harga_publish' => $this->toInteger($data['harga_publish'] ?? null),
                 'harga_jual' => $this->toInteger($data['harga_jual'] ?? null),
-            ]);
+            ]));
 
             TicketingPembayaran::create([
                 'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
@@ -66,17 +67,18 @@ class ReservasiPesawatService extends ReservasiService
 
             $pemesanan = $tiket->ticketingPemesanan;
 
-            $pemesanan->update([
+            $pemesanan->update($this->filterPemesananColumns([
                 'nama_customer' => $data['nama_customer'] ?? $pemesanan->nama_customer,
                 'tckt_kategori_pemesanan_id' => $data['kategori_pemesanan_id'] ?? $pemesanan->tckt_kategori_pemesanan_id,
                 'tckt_unit_kerja_id' => $data['unit_kerja_pemesan'] ?? $pemesanan->tckt_unit_kerja_id,
                 'status_pemesanan' => $data['status_pemesanan'] ?? $pemesanan->status_pemesanan,
+                'lunas' => (bool) ($data['lunas'] ?? $pemesanan->lunas),
                 'pulang_pergi' => (int) ($data['pulang_pergi'] ?? $pemesanan->pulang_pergi),
                 'tanggal_pemesanan' => $this->toDate($data['tanggal_pemesanan'] ?? $pemesanan->tanggal_pemesanan),
                 'harga_beli' => $this->toInteger($data['harga_beli'] ?? $pemesanan->harga_beli),
                 'harga_publish' => $this->toInteger($data['harga_publish'] ?? $pemesanan->harga_publish),
                 'harga_jual' => $this->toInteger($data['harga_jual'] ?? $pemesanan->harga_jual),
-            ]);
+            ]));
 
             $pembayaran = $pemesanan->ticketingPembayaran;
             $dataPembayaran = [

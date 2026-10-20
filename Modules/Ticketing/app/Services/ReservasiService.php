@@ -4,6 +4,7 @@ namespace Modules\Ticketing\Services;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 abstract class ReservasiService
 {
@@ -74,5 +75,17 @@ abstract class ReservasiService
         }
 
         return $time;
+    }
+
+    /**
+     * Buang kolom yang belum ada di DB (mis. migrasi `lunas` tertunda di production).
+     */
+    protected function filterPemesananColumns(array $data): array
+    {
+        if (array_key_exists('lunas', $data) && ! Schema::hasColumn('ticketing_pemesanan', 'lunas')) {
+            unset($data['lunas']);
+        }
+
+        return $data;
     }
 }

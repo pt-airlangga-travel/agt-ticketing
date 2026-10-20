@@ -2,15 +2,18 @@
 
 namespace Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\RelationManagers;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -46,13 +49,15 @@ class RiwayatPembayaranRelationManager extends RelationManager
                         return [];
                     }
 
+                    $pemesanan = $this->getOwnerRecord()?->ticketingPemesanan;
+
                     return $penumpangs->mapWithKeys(fn ($penumpang): array => [
-                        $penumpang->id => $this->sisaTagihan($penumpang->id) <= 0
+                        $penumpang->id => ($pemesanan?->isPenumpangLunas($penumpang->id) || $this->sisaTagihan($penumpang->id) <= 0)
                             ? $penumpang->nama_penumpang.' (Lunas)'
                             : $penumpang->nama_penumpang.' (Sisa Rp '.number_format($this->sisaTagihan($penumpang->id), 0, ',', '.').')',
                     ])->all();
                 })
-                ->disableOptionWhen(fn (string $value): bool => $this->sisaTagihan($value) <= 0)
+                ->disableOptionWhen(fn (string $value): bool => $this->sisaTagihan($value) <= 0 && ! (bool) ($this->getOwnerRecord()?->ticketingPemesanan?->isPenumpangLunas($value) ?? false))
                 ->helperText(function (Get $get): ?string {
                     $penumpangId = $get('tckt_penumpang_id');
 
@@ -60,9 +65,10 @@ class RiwayatPembayaranRelationManager extends RelationManager
                         return null;
                     }
 
+                    $isLunas = (bool) ($this->getOwnerRecord()?->ticketingPemesanan?->isPenumpangLunas($penumpangId) ?? false);
                     $sisa = $this->sisaTagihan($penumpangId);
 
-                    return $sisa <= 0
+                    return ($isLunas || $sisa <= 0)
                         ? 'Penumpang ini sudah lunas.'
                         : 'Sisa tagihan: Rp '.number_format($sisa, 0, ',', '.');
                 })
@@ -124,6 +130,7 @@ class RiwayatPembayaranRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->description(fn (): string => ($this->getOwnerRecord()?->ticketingPemesanan?->isSemuaPenumpangLunas() ?? false) ? 'Status Invoice: Semua Penumpang Lunas' : 'Status Invoice: Belum Semua Penumpang Lunas')
             ->modifyQueryUsing(fn ($query) => $query->with([
                 'ticketingPenumpang.ticketingPembayaranPenumpang',
             ]))
@@ -176,8 +183,14 @@ class RiwayatPembayaranRelationManager extends RelationManager
                     ->label('Sisa')
                     ->state(function ($record) {
                         $tiket = $this->getOwnerRecord();
+                        $pemesanan = $tiket?->ticketingPemesanan;
+                        $isLunas = (bool) ($pemesanan?->isPenumpangLunas($record->tckt_penumpang_id) ?? false);
+                        if ($isLunas) {
+                            return 0;
+                        }
+
                         $penumpangs = $tiket->ticketingPenumpang;
-                        $total = $tiket->ticketingPemesanan?->harga_jual;
+                        $total = $pemesanan?->harga_jual;
 
                         $hargaSatuan = ($penumpangs && $penumpangs->isNotEmpty())
                             ? (int) round((int) $total / $penumpangs->count())
@@ -188,13 +201,22 @@ class RiwayatPembayaranRelationManager extends RelationManager
 
                         return max($hargaSatuan - $terbayar, 0);
                     })
-                    ->formatStateUsing(function ($state) {
-                        return (int) $state > 0
-                            ? 'Rp '.number_format((int) $state, 0, ',', '.')
-                            : 'Lunas';
+                    ->formatStateUsing(function ($state, $record) {
+                        $pemesanan = $this->getOwnerRecord()?->ticketingPemesanan;
+                        $isLunas = (bool) ($pemesanan?->isPenumpangLunas($record->tckt_penumpang_id) ?? false);
+                        if ($isLunas || (int) $state <= 0) {
+                            return 'Lunas';
+                        }
+
+                        return 'Rp '.number_format((int) $state, 0, ',', '.');
                     })
                     ->badge()
-                    ->color(fn ($state) => (int) $state > 0 ? 'warning' : 'success')
+                    ->color(function ($state, $record) {
+                        $pemesanan = $this->getOwnerRecord()?->ticketingPemesanan;
+                        $isLunas = (bool) ($pemesanan?->isPenumpangLunas($record->tckt_penumpang_id) ?? false);
+
+                        return ($isLunas || (int) $state <= 0) ? 'success' : 'warning';
+                    })
                     ->sortable(),
 
                 TextColumn::make('tgl_membayar')
@@ -214,6 +236,47 @@ class RiwayatPembayaranRelationManager extends RelationManager
                     ->placeholder('-'),
             ])
             ->headerActions([
+                Action::make('statusLunasPenumpang')
+                    ->label('Status Lunas Penumpang')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->modalHeading('Status Lunas Penumpang')
+                    ->modalDescription('Pilih penumpang yang statusnya telah lunas pada reservasi ini.')
+                    ->form([
+                        CheckboxList::make('lunas_penumpang_ids')
+                            ->label('Daftar Penumpang')
+                            ->options(function (): array {
+                                $tiket = $this->getOwnerRecord();
+                                $pemesanan = $tiket?->ticketingPemesanan;
+                                $penumpangs = $tiket?->ticketingPenumpang ?? collect();
+                                $total = (int) ($pemesanan?->harga_jual ?? 0);
+                                $hargaSatuan = ($penumpangs->isNotEmpty())
+                                    ? (int) round($total / $penumpangs->count())
+                                    : 0;
+
+                                return $penumpangs->mapWithKeys(function ($penumpang) use ($hargaSatuan): array {
+                                    $terbayar = (int) $penumpang->ticketingPembayaranPenumpang->sum('jumlah_membayar');
+                                    $info = 'Rp '.number_format($terbayar, 0, ',', '.').' / Rp '.number_format($hargaSatuan, 0, ',', '.');
+
+                                    return [
+                                        $penumpang->id => "{$penumpang->nama_penumpang} (Terbayar: {$info})",
+                                    ];
+                                })->all();
+                            })
+                            ->default(fn (): array => $this->getOwnerRecord()?->ticketingPemesanan?->getLunasPenumpangIds() ?? []),
+                    ])
+                    ->action(function (array $data): void {
+                        $pemesanan = $this->getOwnerRecord()?->ticketingPemesanan;
+                        if ($pemesanan) {
+                            $selected = array_map('intval', $data['lunas_penumpang_ids'] ?? []);
+                            $pemesanan->update(['lunas_penumpang_ids' => $selected]);
+                            Notification::make()
+                                ->title('Status lunas penumpang berhasil diperbarui')
+                                ->success()
+                                ->send();
+                        }
+                    }),
+
                 CreateAction::make()
                     ->label('Tambah Pembayaran')
                     ->using(function (array $data): Model {
@@ -269,8 +332,12 @@ class RiwayatPembayaranRelationManager extends RelationManager
             ]);
     }
 
-    protected function sisaTagihan(int $penumpangId): int
+    protected function sisaTagihan(int|string $penumpangId): int
     {
+        if ((bool) ($this->getOwnerRecord()?->ticketingPemesanan?->isPenumpangLunas($penumpangId) ?? false)) {
+            return 0;
+        }
+
         return max($this->hargaSatuan() - ($this->terbayarPerPenumpang()[$penumpangId] ?? 0), 0);
     }
 

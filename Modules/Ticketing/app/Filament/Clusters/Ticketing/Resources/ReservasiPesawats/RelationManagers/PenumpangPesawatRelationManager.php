@@ -8,8 +8,10 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -63,7 +65,13 @@ class PenumpangPesawatRelationManager extends RelationManager
                     ->where('is_active', true)
                     ->pluck('nama_unit_kerja', 'id'))
                 ->searchable()
-                ->preload(),
+                ->preload()
+                ->afterStateHydrated(function ($component, $record) {
+                    if ($record) {
+                        $pembayaranPenumpang = $record->ticketingPembayaranPenumpang->first();
+                        $component->state($pembayaranPenumpang?->tckt_unit_kerja_id ?? $pembayaranPenumpang?->ticketingPembayar?->tckt_unit_kerja_id);
+                    }
+                }),
         ]);
     }
 
@@ -99,9 +107,39 @@ class PenumpangPesawatRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('unit_kerja')
-                    ->label('Unit Kerja')
+                    ->label('Unit Kerja Pembayar')
                     ->state(function (Model $record) {
-                        return $record->ticketingPembayaranPenumpang->first()?->ticketingUnitKerja?->nama_unit_kerja ?? '-';
+                        $pembayaranPenumpang = $record->ticketingPembayaranPenumpang->first();
+                        return $pembayaranPenumpang?->ticketingUnitKerja?->nama_unit_kerja
+                            ?? $pembayaranPenumpang?->ticketingPembayar?->ticketingUnitKerja?->nama_unit_kerja
+                            ?? '-';
+                    }),
+
+                IconColumn::make('lunas')
+                    ->label('Lunas')
+                    ->alignCenter()
+                    ->boolean()
+                    ->state(function (Model $record, $livewire): bool {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+
+                        return (bool) ($pemesanan?->isPenumpangLunas($record->id) ?? false);
+                    })
+                    ->action(function (Model $record, $livewire): void {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+                        if ($pemesanan) {
+                            $isLunas = $pemesanan->isPenumpangLunas($record->id);
+                            $pemesanan->setPenumpangLunas($record->id, ! $isLunas);
+                            Notification::make()
+                                ->title((! $isLunas) ? "Penumpang {$record->nama_penumpang} ditandai lunas" : "Status lunas {$record->nama_penumpang} dibatalkan")
+                                ->success()
+                                ->send();
+                        }
+                    })
+                    ->tooltip(function (Model $record, $livewire): string {
+                        $pemesanan = $livewire->getOwnerRecord()?->ticketingPemesanan;
+                        $isLunas = (bool) ($pemesanan?->isPenumpangLunas($record->id) ?? false);
+
+                        return $isLunas ? 'Lunas (klik untuk batalkan)' : 'Belum Lunas (klik untuk tandai lunas)';
                     }),
             ])
             ->headerActions([

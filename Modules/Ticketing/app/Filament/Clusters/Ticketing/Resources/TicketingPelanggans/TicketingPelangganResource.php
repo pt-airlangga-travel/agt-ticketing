@@ -27,7 +27,7 @@ class TicketingPelangganResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Nama Pelanggan';
+    protected static ?string $navigationLabel = 'Nama Pemesan';
 
     protected static ?string $slug = 'nama-pelanggan';
 

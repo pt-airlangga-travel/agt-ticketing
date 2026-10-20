@@ -18,6 +18,14 @@ class TicketingPemesanan extends Model
 
     protected $table = 'ticketing_pemesanan';
 
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'lunas' => 'boolean',
+        'lunas_penumpang_ids' => 'array',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (TicketingPemesanan $pemesanan) {
@@ -42,6 +50,8 @@ class TicketingPemesanan extends Model
         'tckt_kategori_pemesanan_id',
         'tckt_unit_kerja_id',
         'status_pemesanan',
+        'lunas',
+        'lunas_penumpang_ids',
         'pulang_pergi',
         'tanggal_pemesanan',
         'harga_beli',
@@ -152,5 +162,81 @@ class TicketingPemesanan extends Model
     public function ticketingCekLunas()
     {
         return $this->ticketingTerbayar() >= $this->harga_jual;
+    }
+
+    public function getLunasPenumpangIds(): array
+    {
+        return array_map('intval', $this->lunas_penumpang_ids ?? []);
+    }
+
+    public function isPenumpangLunas(int|string|null $penumpangId): bool
+    {
+        if ($this->lunas) {
+            return true;
+        }
+
+        if (! $penumpangId) {
+            return false;
+        }
+
+        return in_array((int) $penumpangId, $this->getLunasPenumpangIds(), true);
+    }
+
+    public function setPenumpangLunas(int|string $penumpangId, bool $status): void
+    {
+        $id = (int) $penumpangId;
+
+        // Jika sebelumnya lunas seluruh invoice, turunkan ke per-penumpang dulu
+        if ($this->lunas && ! $status) {
+            $allIds = ($this->ticketingPenumpang()?->get() ?? collect())->pluck('id')->map(fn ($v) => (int) $v)->all();
+            $current = array_values(array_filter($allIds, fn ($v) => (int) $v !== $id));
+            $this->update([
+                'lunas' => false,
+                'lunas_penumpang_ids' => $current,
+            ]);
+
+            return;
+        }
+
+        $current = $this->getLunasPenumpangIds();
+
+        if ($status) {
+            if (! in_array($id, $current, true)) {
+                $current[] = $id;
+            }
+        } else {
+            $current = array_values(array_filter($current, fn ($v) => (int) $v !== $id));
+        }
+
+        $penumpangs = $this->ticketingPenumpang()?->get();
+        $isSemua = ($penumpangs && $penumpangs->isNotEmpty())
+            ? $penumpangs->every(fn ($p) => in_array((int) $p->id, $current, true))
+            : false;
+
+        $this->update([
+            'lunas' => (bool) $isSemua,
+            'lunas_penumpang_ids' => $current,
+        ]);
+    }
+
+    public function isSemuaPenumpangLunas(): bool
+    {
+        if ($this->lunas) {
+            return true;
+        }
+
+        $penumpangs = $this->ticketingPenumpang()?->get();
+        if (! $penumpangs || $penumpangs->isEmpty()) {
+            return false;
+        }
+
+        $lunasIds = $this->getLunasPenumpangIds();
+        foreach ($penumpangs as $penumpang) {
+            if (! in_array((int) $penumpang->id, $lunasIds, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -35,6 +35,7 @@ class EditReservasiPesawat extends EditRecord
         $data['nama_customer'] = $pemesanan?->nama_customer;
         $data['unit_kerja_pemesan'] = $pemesanan?->tckt_unit_kerja_id;
         $data['status_pemesanan'] = $pemesanan?->status_pemesanan;
+        $data['lunas'] = (bool) ($pemesanan?->lunas ?? false);
         $data['kategori_pemesanan_id'] = $pemesanan?->tckt_kategori_pemesanan_id;
         $data['tanggal_pemesanan'] = $pemesanan?->tanggal_pemesanan;
         $data['harga_beli'] = $pemesanan?->harga_beli;

@@ -72,4 +72,64 @@ trait ReservasiToggleableColumns
             fn (TextColumn $column): bool => ! in_array($column->getName(), $exclude, true),
         ));
     }
+
+    public static function getFilteredPenumpangsForTable($record, $livewire = null): \Illuminate\Support\Collection
+    {
+        $penumpangs = collect($record->ticketingPenumpang ?? $record->pemilikDokumen ?? [])->sortBy('id');
+
+        if (! $livewire) {
+            return $penumpangs;
+        }
+
+        $searches = method_exists($livewire, 'getTableColumnSearches')
+            ? (array) $livewire->getTableColumnSearches()
+            : [];
+
+        $searchPenumpang = $searches['ticketingPenumpang.nama_penumpang'] ?? null;
+        $searchPembayar = $searches['pembayar_per_penumpang'] ?? $searches['pembayar_per_pemilik'] ?? null;
+        $searchLunas = $searches['lunas'] ?? null;
+
+        // 1. Filter nama penumpang per kepala
+        if (filled($searchPenumpang)) {
+            $penumpangs = $penumpangs->filter(function ($p) use ($searchPenumpang): bool {
+                return str_contains(strtolower($p->nama_penumpang ?? ''), strtolower(trim($searchPenumpang)));
+            });
+        }
+
+        // 2. Filter nama / unit pembayar per kepala
+        if (filled($searchPembayar)) {
+            $term = strtolower(trim($searchPembayar));
+            $penumpangs = $penumpangs->filter(function ($p) use ($term): bool {
+                $bayar = ($p->ticketingPembayaranPenumpang ?? collect())->first();
+                $nama = $bayar?->ticketingPembayar?->nama_pembayar ?? $bayar?->nama_pembayar ?? '';
+                $unit = $bayar?->ticketingUnitKerja?->nama_unit_kerja ?? $bayar?->ticketingPembayar?->ticketingUnitKerja?->nama_unit_kerja ?? '';
+
+                return str_contains(strtolower($nama), $term) || str_contains(strtolower($unit), $term);
+            });
+        }
+
+        // 3. Filter status lunas per kepala
+        if (filled($searchLunas)) {
+            $pemesanan = $record->ticketingPemesanan;
+            $searchLower = strtolower(trim($searchLunas));
+            $isLunasSearch = in_array($searchLower, ['lunas', 'ya', 'sudah', '1', 'true', 'v', 'ok', 'yes'], true)
+                || (str_starts_with('lunas', $searchLower) && ! str_starts_with('belum', $searchLower))
+                || (str_contains($searchLower, 'lunas') && ! str_contains($searchLower, 'belum'));
+            $isBelumSearch = in_array($searchLower, ['belum', 'belum lunas', 'tidak', '0', 'false', 'x', 'no'], true)
+                || str_starts_with('belum', $searchLower)
+                || str_contains($searchLower, 'belum');
+
+            if ($isLunasSearch) {
+                $penumpangs = $penumpangs->filter(function ($p) use ($pemesanan): bool {
+                    return (bool) ($pemesanan?->isPenumpangLunas($p->id) ?? false);
+                });
+            } elseif ($isBelumSearch) {
+                $penumpangs = $penumpangs->filter(function ($p) use ($pemesanan): bool {
+                    return ! ($pemesanan?->isPenumpangLunas($p->id) ?? false);
+                });
+            }
+        }
+
+        return $penumpangs->values();
+    }
 }

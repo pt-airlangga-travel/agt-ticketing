@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingPelanggans\TicketingPelangganResource;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingVendors\TicketingVendorResource;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingPembayars\TicketingPembayarResource;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingPenumpangs\TicketingPenumpangResource;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingUnitKerjas\TicketingUnitKerjaResource;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\TicketingKeretas\TicketingKeretaResource;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiKeretas\ReservasiKeretaResource;
@@ -39,6 +40,7 @@ class RbacTicketingPengajuanSeeder extends Seeder
         TicketingPelangganResource::class,
         TicketingVendorResource::class,
         TicketingPembayarResource::class,
+        TicketingPenumpangResource::class,
         TicketingUnitKerjaResource::class,
         TicketingKeretaResource::class,
         ReservasiKeretaResource::class,

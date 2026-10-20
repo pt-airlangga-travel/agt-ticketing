@@ -200,8 +200,9 @@ class TemuanRegresiTest extends TicketingTestCase
     {
         $controller = $this->moduleFile('app/Http/Controllers/PrintInvoiceController.php');
 
-        $this->assertStringContainsString('$hargaSatuan = $pemesanan->harga_jual;', $controller);
-        $this->assertStringContainsString('$hargaTotal = $hargaSatuan * count($penumpangTerpilih);', $controller);
+        $this->assertStringContainsString('$totalPenumpangPemesanan = $pemesanan->ticketingPenumpang()->count() ?: 1;', $controller);
+        $this->assertStringContainsString('$hargaSatuan = (int) round($pemesanan->harga_jual / max(1, $totalPenumpangPemesanan));', $controller);
+        $this->assertStringContainsString('$hargaTotal = (int) $pemesanan->harga_jual;', $controller);
         $this->assertStringContainsString("'terbilang' => strtoupper(\$this->terbilang(\$hargaTotal)).' RUPIAH',", $controller);
     }
 

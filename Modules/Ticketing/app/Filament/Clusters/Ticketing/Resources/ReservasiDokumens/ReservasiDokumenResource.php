@@ -9,6 +9,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema as SchemaFacade;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pages\CreateReservasiDokumen;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pages\EditReservasiDokumen;
 use Modules\Ticketing\Filament\Clusters\Ticketing\Resources\ReservasiDokumens\Pages\ListReservasiDokumens;
@@ -44,30 +45,36 @@ class ReservasiDokumenResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        $columns = [
+            'ticketing_pemesanan.id',
+            'ticketing_pemesanan.invoice',
+            'ticketing_pemesanan.nama_customer',
+            'ticketing_pemesanan.tckt_kategori_pemesanan_id',
+            'ticketing_pemesanan.tckt_unit_kerja_id',
+            'ticketing_pemesanan.status_pemesanan',
+            'ticketing_pemesanan.pulang_pergi',
+            'ticketing_pemesanan.tanggal_pemesanan',
+            'ticketing_pemesanan.harga_beli',
+            'ticketing_pemesanan.harga_publish',
+            'ticketing_pemesanan.harga_jual',
+            'ticketing_pemesanan.created_by',
+            'ticketing_pemesanan.created_at',
+            'ticketing_pemesanan.updated_at',
+            'users.name as user_name',
+            'users.email as user_email',
+        ];
+
+        if (SchemaFacade::hasColumn('ticketing_pemesanan', 'lunas')) {
+            $columns[] = 'ticketing_pemesanan.lunas';
+        }
+
         $query = parent::getEloquentQuery()
             ->with([
                 'ticketingUnitKerja',
                 'ticketingPembayaran.ticketingUnitKerja',
                 'ticketingPenumpang',
             ])
-            ->select([
-                'ticketing_pemesanan.id',
-                'ticketing_pemesanan.invoice',
-                'ticketing_pemesanan.nama_customer',
-                'ticketing_pemesanan.tckt_kategori_pemesanan_id',
-                'ticketing_pemesanan.tckt_unit_kerja_id',
-                'ticketing_pemesanan.status_pemesanan',
-                'ticketing_pemesanan.pulang_pergi',
-                'ticketing_pemesanan.tanggal_pemesanan',
-                'ticketing_pemesanan.harga_beli',
-                'ticketing_pemesanan.harga_publish',
-                'ticketing_pemesanan.harga_jual',
-                'ticketing_pemesanan.created_by',
-                'ticketing_pemesanan.created_at',
-                'ticketing_pemesanan.updated_at',
-                'users.name as user_name',
-                'users.email as user_email',
-            ])
+            ->select($columns)
             ->leftJoin('users', 'ticketing_pemesanan.created_by', '=', 'users.id');
 
         $user = auth()->user();

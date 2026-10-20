@@ -12,7 +12,7 @@ class TicketingPelangganForm
         return $schema
             ->components([
                 TextInput::make('nama_pelanggan')
-                    ->label('Nama Pelanggan')
+                    ->label('Nama Pemesan')
                     ->required()
                     ->columnSpanFull()
                     ->maxLength(255),

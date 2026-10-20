@@ -110,6 +110,7 @@ class TicketingActivityLogsTable
             'tckt_kategori_pemesanan_id' => 'Kategori Pemesanan',
             'tckt_unit_kerja_id' => 'Unit Kerja',
             'status_pemesanan' => 'Status Pemesanan',
+            'lunas' => 'Lunas',
             'status_pemesanan_pulang_pergi' => 'Status Pulang Pergi',
             'pulang_pergi' => 'Pulang Pergi',
             'tanggal_pemesanan' => 'Tanggal Pemesanan',

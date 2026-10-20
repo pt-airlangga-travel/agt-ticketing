@@ -83,73 +83,143 @@ trait ListsReservasiByEntity
             $writer->addRow(Row::fromValues($columns->map(fn ($column) => $column->getLabel())->all()));
 
             foreach ($query->get() as $record) {
-                $penumpangs = $record->ticketingPenumpang?->all() ?? [];
+                $row = [];
 
-                if (empty($penumpangs)) {
-                    $penumpangs = [null];
+                foreach ($columns as $column) {
+                    $row[] = $this->exportCellValue($column, $record);
                 }
 
-                foreach ($penumpangs as $index => $penumpang) {
-                    $row = [];
-
-                    foreach ($columns as $column) {
-                        $name = $column->getName();
-
-                        if ($name === 'penumpang_id') {
-                            $invoice = $record->ticketingPemesanan?->invoice ?? $record->invoice ?? '-';
-                            $value = $penumpang ? $invoice . '-' . ($index + 1) : '';
-                        } elseif ($name === 'ticketingPenumpang.nama_penumpang' || $name === 'penumpang') {
-                            $value = $penumpang?->nama_penumpang;
-                        } elseif ($name === 'pembayar_per_penumpang' || $name === 'penumpang_pembayar') {
-                            $pembayaranId = $record->ticketingPemesanan?->ticketingPembayaran?->id;
-                            $pembayaran = $penumpang?->ticketingPembayaranPenumpang
-                                ->where('tckt_pembayaran_id', $pembayaranId)
-                                ->first();
-                            $value = $pembayaran?->ticketingPembayar?->nama_pembayar ?? ($pembayaran?->nama_pembayar ?? '-');
-                            $unit = $pembayaran?->ticketingUnitKerja?->nama_unit_kerja;
-                            $value = $unit ? "{$value} ({$unit})" : $value;
-                            if ($penumpang === null) {
-                                $value = data_get($record, $name) ?? $value;
-                            }
-                        } elseif ($name === 'detail_pulang_pergi') {
-                            $value = $record->formatted_detail_pulang_pergi ?? '-';
-                        } elseif (str_starts_with($name, 'pulang_pergi_')) {
-                            // Kolom pecahan "Pulang" (state custom di tabel, bukan atribut model).
-                            $value = $this->exportPulangPergiValue($record, $name);
-                        } else {
-                            $value = data_get($record, $name);
-                        }
-
-                        if (str_ends_with($name, 'include_breakfast')) {
-                            $value = $value ? 'Ya' : 'Tidak';
-                        }
-
-                        if (str_ends_with($name, 'pulang_pergi') && !str_contains($name, 'detail')) {
-                            $value = $value ? 'Ya' : 'Tidak';
-                        }
-
-                        if (in_array($name, ['jadwal_berangkat_pesawat', 'jadwal_tiba_pesawat', 'jadwal_berangkat_kereta', 'jadwal_tiba_kereta', 'jadwal_checkin', 'jadwal_checkout'], true) && filled($value)) {
-                            try {
-                                $value = Carbon::parse($value)->format('d M Y H:i');
-                            } catch (\Throwable $e) {
-                            }
-                        }
-
-                        if (is_null($value)) {
-                            $value = '';
-                        }
-
-                        $row[] = $value;
-                    }
-
-                    $writer->addRow(Row::fromValues($row));
-                }
+                $writer->addRow(Row::fromValues($row));
             }
 
             $writer->close();
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    /**
+     * Mengekstrak nilai sel yang WYSIWYG (What You See Is What You Get) dari Column dan Model record.
+     */
+    protected function exportCellValue($column, $record): mixed
+    {
+        $name = $column->getName();
+
+        // 1. Kolom pecahan "Pulang" (state custom di tabel, bukan atribut model).
+        if (str_starts_with($name, 'pulang_pergi_')) {
+            return $this->exportPulangPergiValue($record, $name);
+        }
+
+        if ($name === 'detail_pulang_pergi') {
+            return $record->formatted_detail_pulang_pergi ?? '-';
+        }
+
+        // 2. Kolom Lunas (IconColumn)
+        if ($name === 'lunas' || $name === 'lunas_status') {
+            $pemesanan = $record->ticketingPemesanan;
+            $all = collect($record->ticketingPenumpang ?? $record->pemilikDokumen ?? [])->sortBy('id');
+            $penumpangs = ReservasiToggleableColumns::getFilteredPenumpangsForTable($record, $this);
+
+            if ($all->isEmpty()) {
+                $isLunas = (bool) ($pemesanan?->lunas || $pemesanan?->isSemuaPenumpangLunas());
+
+                return $isLunas ? 'Lunas' : 'Belum Lunas';
+            }
+
+            return $penumpangs->map(function ($p) use ($pemesanan): string {
+                return ($pemesanan?->isPenumpangLunas($p->id) ?? false) ? 'Lunas' : 'Belum Lunas';
+            })->implode("\n");
+        }
+
+        // 3. Evaluasi state kolom melalui Column instance (WYSIWYG)
+        $value = null;
+        try {
+            $column->record($record);
+            $value = $column->getState();
+        } catch (\Throwable $e) {
+            $value = null;
+        }
+
+        if ($value === null) {
+            $value = data_get($record, $name);
+        }
+
+        // 4. Jika kolom adalah IconColumn
+        if ($column instanceof \Filament\Tables\Columns\IconColumn) {
+            if (is_bool($value)) {
+                return $value ? 'Ya' : 'Tidak';
+            }
+
+            return $value ? (string) $value : '-';
+        }
+
+        // 5. Jika state adalah array / Collection (seperti listWithLineBreaks pada penumpang, pembayar, harga per pax, sisa tagihan)
+        if (is_array($value) || $value instanceof \Illuminate\Support\Collection) {
+            $items = collect($value)->map(function ($item) {
+                if ($item instanceof \Illuminate\Contracts\Support\Htmlable) {
+                    $item = strip_tags($item->toHtml());
+                }
+
+                return is_scalar($item) ? (string) $item : json_encode($item);
+            })->all();
+
+            return ! empty($items) ? implode("\n", $items) : '-';
+        }
+
+        // 6. Format state menggunakan formatState() jika ada
+        if (method_exists($column, 'formatState')) {
+            try {
+                $formatted = $column->formatState($value);
+                if ($formatted instanceof \Illuminate\Contracts\Support\Htmlable) {
+                    $formatted = $formatted->toHtml();
+                }
+
+                if (is_string($formatted) && str_contains($formatted, '<')) {
+                    // Bersihkan HTML tag dan ubah div/br menjadi spasi
+                    $clean = preg_replace('/<(?:\/div|div[^>]*|br\s*\/?)>/i', ' ', $formatted);
+                    $clean = trim(strip_tags($clean));
+                    $clean = preg_replace('/\s+/', ' ', $clean);
+                    if (filled($clean)) {
+                        $value = $clean;
+                    }
+                } elseif (filled($formatted)) {
+                    $value = $formatted;
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'Ya' : 'Tidak';
+        }
+
+        if ($value instanceof \Illuminate\Contracts\Support\Htmlable) {
+            $clean = preg_replace('/<(?:\/div|div[^>]*|br\s*\/?)>/i', ' ', $value->toHtml());
+            $clean = trim(strip_tags($clean));
+
+            return preg_replace('/\s+/', ' ', $clean);
+        }
+
+        if (str_ends_with($name, 'include_breakfast')) {
+            return $value ? 'Ya' : 'Tidak';
+        }
+
+        if (str_ends_with($name, 'pulang_pergi') && ! str_contains($name, 'detail')) {
+            return $value ? 'Ya' : 'Tidak';
+        }
+
+        if (in_array($name, ['jadwal_berangkat_pesawat', 'jadwal_tiba_pesawat', 'jadwal_berangkat_kereta', 'jadwal_tiba_kereta', 'jadwal_checkin', 'jadwal_checkout'], true) && filled($value)) {
+            try {
+                $value = Carbon::parse($value)->format('d M Y H:i');
+            } catch (\Throwable $e) {
+            }
+        }
+
+        if (is_null($value) || $value === '') {
+            return '-';
+        }
+
+        return $value;
     }
 
     /**

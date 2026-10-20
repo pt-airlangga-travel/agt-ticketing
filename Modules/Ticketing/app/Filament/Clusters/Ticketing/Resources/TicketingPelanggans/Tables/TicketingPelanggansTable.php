@@ -19,7 +19,7 @@ class TicketingPelanggansTable
                     ->rowIndex(),
 
                 TextColumn::make('nama_pelanggan')
-                    ->label('Nama Pelanggan')
+                    ->label('Nama Pemesan')
                     ->searchable(),
             ])
             ->paginationMode(PaginationMode::Default)
@@ -27,7 +27,7 @@ class TicketingPelanggansTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->button()->hiddenLabel()->modalHeading('Edit Nama Pelanggan'),
+                EditAction::make()->button()->hiddenLabel()->modalHeading('Edit Nama Pemesan'),
             ])
             ->toolbarActions([
                 //

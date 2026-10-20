@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
@@ -184,6 +185,11 @@ class ReservasiFormPartials
                 Placeholder::make('profit')
                     ->label('Profit')
                     ->content(fn (Get $get) => self::formatProfit($get)),
+
+                Toggle::make('lunas')
+                    ->label('Lunas')
+                    ->helperText('Centang jika invoice ini sudah lunas (dicek manual oleh admin)')
+                    ->default(false),
             ]),
             // Grid::make(2)->schema([
             //     Placeholder::make('komisi')
