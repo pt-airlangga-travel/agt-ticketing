@@ -27,9 +27,9 @@ class ReservasiDokumenService extends ReservasiService
             ]));
 
             TicketingPembayaran::create([
-                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? null,
+                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? $data['unit_kerja_pemesan'] ?? null,
                 'tckt_pemesanan_id' => $pemesanan->id,
-                'nama_pembayar' => $data['nama_pembayar'] ?? null,
+                'nama_pembayar' => $data['nama_pembayar'] ?? $data['nama_customer'] ?? '-',
             ]);
 
             TicketingDokumen::create([
@@ -60,8 +60,8 @@ class ReservasiDokumenService extends ReservasiService
 
             $pembayaran = $pemesanan->ticketingPembayaran;
             $dataPembayaran = [
-                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? $pembayaran?->tckt_unit_kerja_id,
-                'nama_pembayar' => $data['nama_pembayar'] ?? $pembayaran?->nama_pembayar,
+                'tckt_unit_kerja_id' => $data['unit_kerja_pembayar'] ?? $pembayaran?->tckt_unit_kerja_id ?? $data['unit_kerja_pemesan'] ?? $pemesanan->tckt_unit_kerja_id,
+                'nama_pembayar' => $data['nama_pembayar'] ?? $pembayaran?->nama_pembayar ?? $data['nama_customer'] ?? $pemesanan->nama_customer ?? '-',
             ];
             if ($pembayaran) {
                 $pembayaran->update($dataPembayaran);

@@ -21,12 +21,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema as DBSchema;
+use Modules\Ticketing\Filament\Clusters\Ticketing\Concerns\HasExportRiwayatPembayaranBulkAction;
 use Modules\Ticketing\Models\TicketingPembayar;
 use Modules\Ticketing\Models\TicketingPembayaranPenumpang;
 use Modules\Ticketing\Models\TicketingUnitKerja;
 
 class RiwayatPembayaranRelationManager extends RelationManager
 {
+    use HasExportRiwayatPembayaranBulkAction;
+
     protected static bool $shouldSkipAuthorization = true;
 
     protected static string $relationship = 'ticketingPembayaranPenumpang';
@@ -136,14 +139,16 @@ class RiwayatPembayaranRelationManager extends RelationManager
             ]))
             ->columns([
                 TextColumn::make('ticketingPenumpang.nama_penumpang')
-                    ->label('Penumpang')
+                    ->label('Nama Penumpang')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('ticketingPembayar.nama_pembayar')
-                    ->label('Pembayar')
+                    ->label('Nama Pembayar')
+                    ->default(fn (Model $record) => $record->nama_pembayar ?? '-')
                     ->placeholder('-')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 TextColumn::make('ticketingUnitKerja.nama_unit_kerja')
                     ->label('Unit Kerja')
@@ -151,7 +156,6 @@ class RiwayatPembayaranRelationManager extends RelationManager
 
                 TextColumn::make('jumlah_membayar')
                     ->label('Jumlah')
-                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
 
                 TextColumn::make('total_per_penumpang')
@@ -167,7 +171,6 @@ class RiwayatPembayaranRelationManager extends RelationManager
 
                         return (int) round((int) $total / $penumpangs->count());
                     })
-                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
 
                 TextColumn::make('terbayar_per_penumpang')
@@ -311,6 +314,7 @@ class RiwayatPembayaranRelationManager extends RelationManager
                     }),
             ])
             ->bulkActions([
+                $this->exportRiwayatPembayaranBulkAction(),
                 BulkAction::make('tandai_valid')
                     ->label('Tandai Bukti Valid')
                     ->icon('heroicon-o-check-circle')

@@ -57,7 +57,16 @@ class PenumpangPesawatRelationManager extends RelationManager
                         ->all();
                 })
                 ->searchable()
-                ->preload(),
+                ->preload()
+                ->createOptionForm([
+                    TextInput::make('nama_pembayar')
+                        ->label('Nama Pembayar')
+                        ->required()
+                        ->maxLength(255),
+                ])
+                ->createOptionUsing(fn (array $data) => TicketingPembayar::firstOrCreate([
+                    'nama_pembayar' => $data['nama_pembayar'],
+                ])->id),
 
             Select::make('unit_kerja_pembayar')
                 ->label('Unit Kerja Pembayar')
@@ -91,7 +100,8 @@ class PenumpangPesawatRelationManager extends RelationManager
 
                 TextColumn::make('nama_penumpang')
                     ->label('Nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
@@ -181,7 +191,16 @@ class PenumpangPesawatRelationManager extends RelationManager
                                     ->all();
                             })
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('nama_pembayar')
+                                    ->label('Nama Pembayar')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(fn (array $data) => TicketingPembayar::firstOrCreate([
+                                'nama_pembayar' => $data['nama_pembayar'],
+                            ])->id),
 
                         Select::make('unit_kerja_pembayar')
                             ->label('Unit Kerja Pembayar')

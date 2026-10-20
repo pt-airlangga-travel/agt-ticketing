@@ -31,7 +31,7 @@ class TicketingVendorResource extends Resource
 
     protected static ?string $slug = 'vendor';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 9;
 
     protected static ?string $cluster = TicketingCluster::class;
 

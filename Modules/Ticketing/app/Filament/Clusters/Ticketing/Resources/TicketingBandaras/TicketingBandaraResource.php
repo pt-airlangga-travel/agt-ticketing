@@ -31,7 +31,7 @@ class TicketingBandaraResource extends Resource
 
     protected static ?string $slug = 'bandar-udara';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = TicketingCluster::class;
 

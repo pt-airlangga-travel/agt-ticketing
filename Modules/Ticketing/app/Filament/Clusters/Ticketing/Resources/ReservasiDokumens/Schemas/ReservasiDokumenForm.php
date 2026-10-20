@@ -19,7 +19,6 @@ class ReservasiDokumenForm
             ->columns(1)
             ->components([
                 Section::make('Pemesan')->schema(ReservasiFormPartials::kolomPemesan()),
-                Section::make('Pembayar')->schema(ReservasiFormPartials::kolomPembayar()),
                 Section::make('Harga')->schema(ReservasiFormPartials::kolomHarga()),
                 Section::make('Dokumen')->schema(self::kolomDokumen()),
             ]);

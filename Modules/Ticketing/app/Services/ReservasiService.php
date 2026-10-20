@@ -14,18 +14,19 @@ abstract class ReservasiService
         $lastTwoDigitsOfYear = $today->format('y');
         $month = $today->format('m');
 
-        $latestInvoice = DB::select(
-            'SELECT invoice FROM ticketing_pemesanan
-             WHERE YEAR(created_at) = YEAR(CURDATE())
-               AND MONTH(created_at) = MONTH(CURDATE())
-               AND SUBSTRING(invoice,5,1) = ?
-             ORDER BY id DESC LIMIT 1',
-            [$jenisReservasi]
-        );
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfMonth();
+
+        $prefix = $lastTwoDigitsOfYear.$month.$jenisReservasi;
+        $latestInvoice = DB::table('ticketing_pemesanan')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->where('invoice', 'like', $prefix.'%')
+            ->orderByDesc('id')
+            ->value('invoice');
 
         $sequenceNumber = 1;
         if (! empty($latestInvoice)) {
-            $sequenceNumber = intval(substr($latestInvoice[0]->invoice, -4)) + 1;
+            $sequenceNumber = intval(substr($latestInvoice, -4)) + 1;
         }
 
         return $lastTwoDigitsOfYear.$month.$jenisReservasi.sprintf('%04d', $sequenceNumber);

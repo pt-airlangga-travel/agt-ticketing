@@ -90,6 +90,17 @@ class ReservasiFormPartials
                         ->pluck('nama_pelanggan', 'nama_pelanggan'))
                     ->searchable()
                     ->preload()
+                    ->createOptionForm([
+                        TextInput::make('nama_pelanggan')
+                            ->label('Nama Pemesan')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        return TicketingPelanggan::firstOrCreate([
+                            'nama_pelanggan' => $data['nama_pelanggan'],
+                        ])->nama_pelanggan;
+                    })
                     ->required(),
 
                 Select::make('unit_kerja_pemesan')

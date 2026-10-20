@@ -21,7 +21,6 @@ class ReservasiHotelForm
             ->columns(1)
             ->components([
                 Section::make('Pemesan')->schema(ReservasiFormPartials::kolomPemesan()),
-                Section::make('Pembayar')->schema(ReservasiFormPartials::kolomPembayar()),
                 Section::make('Harga')->schema(ReservasiFormPartials::kolomHarga()),
                 Section::make('Hotel')->schema(self::kolomHotel()),
             ]);

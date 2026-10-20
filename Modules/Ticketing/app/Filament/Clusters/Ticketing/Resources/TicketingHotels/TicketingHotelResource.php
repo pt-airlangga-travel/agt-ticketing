@@ -31,7 +31,7 @@ class TicketingHotelResource extends Resource
 
     protected static ?string $slug = 'hotel';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 8;
 
     protected static ?string $cluster = TicketingCluster::class;
 

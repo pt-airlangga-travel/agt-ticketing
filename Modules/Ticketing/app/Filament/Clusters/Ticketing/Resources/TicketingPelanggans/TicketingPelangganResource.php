@@ -31,7 +31,7 @@ class TicketingPelangganResource extends Resource
 
     protected static ?string $slug = 'nama-pelanggan';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $cluster = TicketingCluster::class;
 

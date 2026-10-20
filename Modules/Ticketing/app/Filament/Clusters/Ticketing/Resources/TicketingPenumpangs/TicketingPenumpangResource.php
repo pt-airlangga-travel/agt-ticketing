@@ -32,7 +32,7 @@ class TicketingPenumpangResource extends Resource
 
     protected static ?string $slug = 'nama-penumpang';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = TicketingCluster::class;
 
